@@ -4,10 +4,18 @@
 
 class Swapchain {
 public:
+	struct Image {
+		VkImage image;
+		VkImageView view;
+	};
+
 	Swapchain(Device& device, Window& window);
 	~Swapchain();
 
 	VkSwapchainKHR vkHandle() const { return swapchain_; }
+	VkExtent2D extent() const { return swapExtent_; }
+	VkSurfaceFormatKHR format() const { return surfaceFormat_; }
+	std::vector<Image> images() const;
 
 private:
 	void createSwapchain();
@@ -21,8 +29,8 @@ private:
 	Device& device_;
 	Window& window_;
 	VkSwapchainKHR swapchain_ = VK_NULL_HANDLE;
-	std::vector<VkImage> swapchainImages_;
-	std::vector<VkImageView> swapchainImageViews_;
-	VkSurfaceFormatKHR swapchainFormat_;
+	std::vector<VkImage> images_;
+	std::vector<VkImageView> imageViews_;
+	VkSurfaceFormatKHR surfaceFormat_;
 	VkExtent2D swapExtent_;
 };

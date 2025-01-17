@@ -42,7 +42,9 @@ Device::Device(VkInstance instance, VkSurfaceKHR surface) : instance_(instance),
 	createInfo.enabledLayerCount = 0;
 
 	VkResult deviceCreateResult = vkCreateDevice(physicalDevice_, &createInfo, nullptr, &device_);
-	RASSERT(deviceCreateResult == VK_SUCCESS, "failed to create device");
+	if (deviceCreateResult != VK_SUCCESS) { 
+		throw std::runtime_error("failed to create Vulkan logical device");
+	};
 
 	vkGetDeviceQueue(device_, indicies.graphicsFamily.value(), 0, &graphicsQueue_);
 }

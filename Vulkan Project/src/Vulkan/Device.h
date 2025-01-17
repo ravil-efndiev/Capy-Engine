@@ -9,6 +9,7 @@ public:
 	VkPhysicalDevice vkPhysicalDevice() const { return physicalDevice_; }
 	SwapchainSupportDetails swapchainDetails() const { return querySwapchainSupport(physicalDevice_); }
 	QueueFamilyIndices queueFamilies() const { return findQueueFamilies(physicalDevice_);  }
+	VkQueue graphicsQueue() const { return graphicsQueue_; }
 
 private:
 	void setSuitableDevice(const std::vector<VkPhysicalDevice>& devices);

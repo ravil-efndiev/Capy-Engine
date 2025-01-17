@@ -33,3 +33,16 @@ void enableVirtualTerminalProcessing() {
 	SetConsoleMode(hOut, dwMode);
 #endif
 }
+
+std::vector<char> readFileBin(const std::string& path) {
+	std::ifstream file(path, std::ios::binary | std::ios::ate);
+	
+	if (!file.is_open()) {
+		throw std::runtime_error("couldnt open file from path '" + path + "'");
+	}
+
+	std::vector<char> bytes(file.tellg());
+	file.seekg(0);
+	file.read(bytes.data(), bytes.size());
+	return bytes;
+}

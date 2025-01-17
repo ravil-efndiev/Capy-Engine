@@ -56,7 +56,9 @@ void VulkanContext::createInstance() {
 	}
 
 	VkResult instanceRes = vkCreateInstance(&createInfo, nullptr, &instance_);
-	RASSERT(instanceRes == VK_SUCCESS, "vkCreateInstance failed");
+	if (instanceRes != VK_SUCCESS) {
+		throw std::runtime_error("couldn't create Vulkan instance");
+	}
 }
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
