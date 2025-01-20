@@ -6,40 +6,46 @@
 #include "Framebuffer.h"
 #include "RenderPass.h"
 
-struct RendererConfiguration {
-	uint framesInFlight = 2;
-};
+namespace cp {
+	struct RendererConfiguration {
+		uint framesInFlight = 2;
+	};
 
-class Renderer {
-public:
-	Renderer(
-		Device& device, 
-		Swapchain& swpachain, 
-		EventHandler& evtHandler, 
-		const RendererConfiguration& config = {}
-	);
-	~Renderer();
+	class Renderer {
+	public:
+		Renderer(
+			Device& device,
+			Swapchain& swpachain,
+			EventHandler& evtHandler,
+			const RendererConfiguration& config = {}
+		);
+		~Renderer();
 
-	void draw();
-	void finish();
+		void draw();
+		void setViewportSize(int width, int height);
 
-private:
-	void init();
-	void createSyncObjects();
+	private:
+		void init();
+		void createFramebuffers();
+		void createSyncObjects();
 
-	void recordCommandBuffer(uint imageIdx);
+		void recordCommandBuffer(uint imageIdx);
+		void recreateSwapchain();
 
-private:
-	RendererConfiguration configuration_;
-	std::unique_ptr<Pipeline> pipeline_;
-	std::unique_ptr<RenderPass> renderPass_;
-	std::vector<std::unique_ptr<Framebuffer>> framebuffers_;
-	Device& device_;
-	Swapchain& swapchain_;
-	VkCommandPool cmdPool_;
-	VkCommandBuffer cmdBuffer_;
-	VkSemaphore imageAvailSemaphore_;
-	VkSemaphore renderFinishedSemaphore_;
-	VkFence	inFlightFence_;
-};
+	private:
+		RendererConfiguration configuration_;
+		std::unique_ptr<Pipeline> pipeline_;
+		std::unique_ptr<RenderPass> renderPass_;
+		std::vector<std::unique_ptr<Framebuffer>> framebuffers_;
+		Device& device_;
+		Swapchain& swapchain_;
+		VkCommandPool cmdPool_;
+		std::vector<VkCommandBuffer> cmdBuffers_;
+		std::vector<VkSemaphore> imageAvailSemaphores_;
+		std::vector<VkSemaphore> renderFinishedSemaphores_;
+		std::vector<VkFence> inFlightFences_;
 
+		int viewportWidth_, viewportHeight_;
+		uint currentFrame_ = 0;
+	};
+}

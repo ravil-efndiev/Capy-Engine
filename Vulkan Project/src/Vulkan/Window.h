@@ -2,31 +2,38 @@
 #include <Utils.h>
 #include <Events/EventHandler.h>
 
-struct WindowSpecification {
-	VkInstance instance;
-	int width; 
-	int height;
-	std::string title;
-};
+namespace cp {
+	struct WindowSpecification {
+		VkInstance instance;
+		int width;
+		int height;
+		std::string title;
+	};
 
-class Window {
-public:
-	Window(EventHandler& eventHandler, const WindowSpecification& spec);
-	~Window();
+	class Window {
+	public:
+		Window(EventHandler& eventHandler, const WindowSpecification& spec);
+		~Window();
 
-	GLFWwindow* glfwHandle() { return window_; }
-	VkSurfaceKHR surface() const { return surface_; }
-	void pollEvents();
-	bool shouldClose() const;
-	
-	void onTest(int width, int height);
+		GLFWwindow* glfwHandle() { return window_; }
+		VkSurfaceKHR surface() const { return surface_; }
+		bool minimized() const { return minimized_; }
 
-private: 
-	void registerEvents();
+		void pollEvents();
+		bool shouldClose() const;
+		void wait();
 
-private:
-	WindowSpecification spec_{};
-	GLFWwindow* window_;
-	VkSurfaceKHR surface_ = VK_NULL_HANDLE;
-	EventHandler& evtHandler_;
-};
+		void onEvent(const Event* event);
+		void setMinimized(bool flag);
+
+	private:
+		void registerEvents();
+
+	private:
+		WindowSpecification spec_{};
+		GLFWwindow* window_;
+		VkSurfaceKHR surface_ = VK_NULL_HANDLE;
+		EventHandler& evtHandler_;
+		bool minimized_ = false;
+	};
+}

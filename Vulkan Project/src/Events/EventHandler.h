@@ -1,10 +1,17 @@
 #pragma once
 #include <include.h>
+#include "Event.h"
 
-class EventHandler {
-public:
-	void handleTest(int width, int height);
+namespace cp {
+	class EventHandler {
+	public:
+		using ResizeEventListener = std::function<void(int, int)>;
 
-private:
+		void handle(const Event* event);
 
-};
+		void subscribeToResizeEvt(const ResizeEventListener& listener);
+
+	private:
+		std::vector<ResizeEventListener> resizeEventListeners;
+	};
+}
