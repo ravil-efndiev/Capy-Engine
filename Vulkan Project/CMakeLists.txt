@@ -2,8 +2,14 @@
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(HOME $ENV{USERPROFILE})
-set(CMAKE_TOOLCHAIN_FILE ${HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "")
 
+if(WIN32)
+    set(CMAKE_TOOLCHAIN_FILE ${HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "")
+else()  
+    set(CMAKE_TOOLCHAIN_FILE ~/tools/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "") 
+    set(glm_DIR ~/tools/vcpkg/installed/x64-linux/share/glm/)
+    set(glfw3_DIR ~/tools/vcpkg/installed/x64-linux/share/glfw3/)
+endif()
 add_executable(vk 
     "src/main.cpp"
     "src/Application.cpp"
@@ -12,7 +18,7 @@ add_executable(vk
     "src/Utils.cpp"
     "src/Utils.h"
  "src/Vulkan/VulkanContext.cpp"
-"src/Vulkan/VulkanContext.h" "src/Vulkan/Window.cpp" "src/Vulkan/Window.h" "src/Vulkan/Device.cpp" "src/Vulkan/Device.h" "src/Vulkan/Swapchain.h" "src/Vulkan/Swapchain.cpp" "src/Graphics/Shader.h" "src/Graphics/Shader.cpp" "src/Graphics/Pipeline.h" "src/Graphics/Pipeline.cpp" "src/Graphics/RenderPass.h" "src/Graphics/RenderPass.cpp" "src/Graphics/FrameBuffer.h" "src/Graphics/FrameBuffer.cpp" "src/Graphics/Renderer.h" "src/Graphics/Renderer.cpp" "src/Events/EventHandler.cpp" "src/Events/Event.h" "src/Graphics/VertexBuffer.cpp"  "src/Graphics/VertexBuffer.h" "src/Graphics/Vertex.h")
+"src/Vulkan/VulkanContext.h" "src/Vulkan/Window.cpp" "src/Vulkan/Window.h" "src/Vulkan/Device.cpp" "src/Vulkan/Device.h" "src/Vulkan/Swapchain.h" "src/Vulkan/Swapchain.cpp" "src/Graphics/Shader.h" "src/Graphics/Shader.cpp" "src/Graphics/Pipeline.h" "src/Graphics/Pipeline.cpp" "src/Graphics/RenderPass.h" "src/Graphics/RenderPass.cpp" "src/Graphics/Framebuffer.h" "src/Graphics/Framebuffer.cpp" "src/Graphics/Renderer.h" "src/Graphics/Renderer.cpp" "src/Events/EventHandler.cpp" "src/Events/Event.h" "src/Graphics/VertexBuffer.cpp"  "src/Graphics/VertexBuffer.h" "src/Graphics/Vertex.h")
 
 target_include_directories(vk PUBLIC
     src/

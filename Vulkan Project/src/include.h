@@ -15,10 +15,14 @@
 #include <fstream>
 #include <sstream>
 #include <functional>
+#include <memory>
 
-#ifdef WIN32
+#ifdef _MSC_VER
 	#define NOMINMAX
 	#include <Windows.h>
+	#define CP_VA_ARGS(...) , __VA_ARGS__
+#elif defined(__GNUC__) or defined(__clang__)
+	#define CP_VA_ARGS(...) , ##__VA_ARGS__
 #endif
 
 #define CP_DEBUG
@@ -29,8 +33,8 @@
 		std::abort(); \
 	}
 	#define CP_DEBUG_VULKAN(severity, message) printf("%s %s\n", severity, message)
-	#define CP_DEBUG_LOG(fmt, ...) printf(("\033[36m[Info]\033[0m " + std::string(fmt) + "\n").c_str(), __VA_ARGS__)
-	#define CP_DEBUG_ERROR(fmt, ...) fprintf(stderr, ("\033[31m[Error]\033[0m" + std::string(fmt) + "\n").c_str(), __VA_ARGS__)
+	#define CP_DEBUG_LOG(fmt, ...) printf("\033[36m[Info]\033[0m " fmt "\n" CP_VA_ARGS(__VA_ARGS__))
+	#define CP_DEBUG_ERROR(fmt, ...) fprintf(stderr, "\033[31m[Error]\033[0m " fmt "\n" CP_VA_ARGS(__VA_ARGS__))
 #else 
 	#define CP_ASSERT()
 	#define CP_DEBUG_LOG(fmt, ...)
