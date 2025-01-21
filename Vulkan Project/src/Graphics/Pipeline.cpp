@@ -1,9 +1,8 @@
 #include "Pipeline.h"
 #include <Application.h>
-#include "Vertex.h"
 
 namespace cp {
-	Pipeline::Pipeline(Device& device, Swapchain& swapchain, const PipelineConfiguration& config = {})
+	Pipeline::Pipeline(Device& device, Swapchain& swapchain, const PipelineConfiguration& config)
 		: mDevice(device), mSwapchain(swapchain), mConfig(config) {
 
 		setFixedState();
@@ -36,18 +35,16 @@ namespace cp {
 		mDynamicState.dynamicStateCount = mDynamicStates.size();
 		mDynamicState.pDynamicStates = mDynamicStates.data();
 
-		VkVertexInputBindingDescription bindingDesc{};
-		PositionColorVertex::AttributeDescriptions attribDescs;
 		if (mConfig.vertexType == PipelineConfiguration::PositionColorVertex) {
-			bindingDesc = PositionColorVertex::bindingDescription();
-			attribDescs = PositionColorVertex::attributeDescriptions();
+			mBindingDesc = PositionColorVertex::bindingDescription();
+			mAttribDescs = PositionColorVertex::attributeDescriptions();
 		}
 
 		mVertexInput.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 		mVertexInput.vertexBindingDescriptionCount = 1;
-		mVertexInput.pVertexBindingDescriptions = &bindingDesc;
-		mVertexInput.vertexAttributeDescriptionCount = attribDescs.size();
-		mVertexInput.pVertexAttributeDescriptions = attribDescs.data();
+		mVertexInput.pVertexBindingDescriptions = &mBindingDesc;
+		mVertexInput.vertexAttributeDescriptionCount = mAttribDescs.size();
+		mVertexInput.pVertexAttributeDescriptions = mAttribDescs.data();
 
 		mInputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 		mInputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;

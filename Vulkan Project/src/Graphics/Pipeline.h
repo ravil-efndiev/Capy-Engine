@@ -3,6 +3,7 @@
 #include <Vulkan/Swapchain.h>
 #include "Shader.h"
 #include "RenderPass.h"
+#include "Vertex.h"
 
 namespace cp {
 	struct PipelineConfiguration {
@@ -36,6 +37,9 @@ namespace cp {
 		VkPipeline mPipeline = VK_NULL_HANDLE;
 		VkPipelineLayout mPipelineLayout = VK_NULL_HANDLE;
 		RenderPass mRenderPass{ mDevice, mSwapchain };
+
+		VkVertexInputBindingDescription mBindingDesc{};
+		AttributeDescriptions mAttribDescs;
 
 		VkPipelineShaderStageCreateInfo mVertexShaderStage{};
 		VkPipelineShaderStageCreateInfo mFragmentShaderStage{};
