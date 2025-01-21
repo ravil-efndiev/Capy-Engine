@@ -2,18 +2,20 @@
 
 namespace cp {
 	Window::Window(EventHandler& eventHandler, const WindowSpecification& spec)
-		: spec_(spec), evtHandler_(eventHandler) {
+		: mSpec(spec), mEvtHandler(eventHandler) {
 
+		CP_ASSERT(mSpec.width > 0 && mSpec.height > 0, "cannot initalize a window with 0 width or height");
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-		window_ = glfwCreateWindow(spec_.width, spec_.height, spec_.title.c_str(), nullptr, nullptr);
-		VkResult result = glfwCreateWindowSurface(spec_.instance, window_, nullptr, &surface_);
+		mWindow = glfwCreateWindow(mSpec.width, mSpec.height, mSpec.title.c_str(), nullptr, nullptr);
+
+		VkResult result = glfwCreateWindowSurface(mSpec.instance, mWindow, nullptr, &mSurface);
 		checkVkResult(result, "failed to create window surface");
 		registerEvents();
 	}
 
 	Window::~Window() {
-		vkDestroySurfaceKHR(spec_.instance, surface_, nullptr);
-		glfwDestroyWindow(window_);
+		vkDestroySurfaceKHR(mSpec.instance, mSurface, nullptr);
+		glfwDestroyWindow(mWindow);
 		CP_DEBUG_LOG("window & surface destroyed");
 	}
 
@@ -22,7 +24,7 @@ namespace cp {
 	}
 
 	bool Window::shouldClose() const {
-		return glfwWindowShouldClose(window_);
+		return glfwWindowShouldClose(mWindow);
 	}
 
 	void Window::wait() {
@@ -30,24 +32,24 @@ namespace cp {
 	}
 
 	void Window::onEvent(const Event* event) {
-		evtHandler_.handle(event);
+		mEvtHandler.handle(event);
 	}
 
 	void Window::setMinimized(bool flag) {
-		minimized_ = flag;
+		mMinimized = flag;
 	}
 
 	void Window::registerEvents() {
-		glfwSetWindowUserPointer(window_, this);
+		glfwSetWindowUserPointer(mWindow, this);
 
-		glfwSetFramebufferSizeCallback(window_, [](GLFWwindow* glfwWin, int width, int height) {
+		glfwSetFramebufferSizeCallback(mWindow, [](GLFWwindow* glfwWin, int width, int height) {
 			Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWin));
 			
 			ResizeEvent event(width, height);
 			window->onEvent(&event);
 		});
 
-		glfwSetWindowIconifyCallback(window_, [](GLFWwindow* glfwWin, int iconified) {
+		glfwSetWindowIconifyCallback(mWindow, [](GLFWwindow* glfwWin, int iconified) {
 			Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWin));
 
 			if (iconified) {

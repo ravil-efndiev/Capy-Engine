@@ -6,11 +6,11 @@ namespace cp {
 	public:
 		Device(VkInstance instance, VkSurfaceKHR surface);
 		~Device();
-		VkDevice vkDevice() const { return device_; }
+		VkDevice vkDevice() const { return mDevice; }
 		VkPhysicalDevice vkPhysicalDevice() const { return physicalDevice_; }
 		SwapchainSupportDetails swapchainDetails() const { return querySwapchainSupport(physicalDevice_); }
 		QueueFamilyIndices queueFamilies() const { return findQueueFamilies(physicalDevice_); }
-		VkQueue graphicsQueue() const { return graphicsQueue_; }
+		VkQueue graphicsQueue() const { return mGraphicsQueue; }
 
 		void wait();
 
@@ -23,12 +23,12 @@ namespace cp {
 		VkPhysicalDeviceType getDeviceType(const VkPhysicalDevice device);
 
 	private:
-		VkInstance instance_ = VK_NULL_HANDLE;
+		VkInstance mInstance = VK_NULL_HANDLE;
 		VkPhysicalDevice physicalDevice_ = VK_NULL_HANDLE;
-		VkDevice device_ = VK_NULL_HANDLE;
-		VkQueue graphicsQueue_ = VK_NULL_HANDLE;
-		VkSurfaceKHR surface_ = VK_NULL_HANDLE;
+		VkDevice mDevice = VK_NULL_HANDLE;
+		VkQueue mGraphicsQueue = VK_NULL_HANDLE;
+		VkSurfaceKHR mSurface = VK_NULL_HANDLE;
 
-		const std::array<const char*, 1> deviceExtensions_ = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+		const std::array<const char*, 1> mDeviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 	};
 }

@@ -3,6 +3,9 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <iostream>
 #include <vector>
 #include <array>
@@ -18,7 +21,9 @@
 	#include <Windows.h>
 #endif
 
-#ifndef NDEBUG
+#define CP_DEBUG
+
+#ifdef CP_DEBUG
 	#define CP_ASSERT(cond, err) if (!(cond)) { \
 		std::cerr << "Assertion failed in function " << __FUNCTION__ << " in file " << __FILE__ << ", details:\n" << err << "\n"; \
 		std::abort(); \
@@ -26,13 +31,11 @@
 	#define CP_DEBUG_VULKAN(severity, message) printf("%s %s\n", severity, message)
 	#define CP_DEBUG_LOG(fmt, ...) printf(("\033[36m[Info]\033[0m " + std::string(fmt) + "\n").c_str(), __VA_ARGS__)
 	#define CP_DEBUG_ERROR(fmt, ...) fprintf(stderr, ("\033[31m[Error]\033[0m" + std::string(fmt) + "\n").c_str(), __VA_ARGS__)
-	constexpr bool VALIDATION_LAYERS_ENABLED = true;
 #else 
 	#define CP_ASSERT()
 	#define CP_DEBUG_LOG(fmt, ...)
 	#define CP_DEBUG_ERROR(fmt, ...)
 	#define CP_DEBUG_VULKAN(severity, message)
-	constexpr bool VALIDATION_LAYERS_ENABLED = false;
 #endif
 
 namespace cp {
@@ -53,4 +56,10 @@ namespace cp {
 		std::vector<VkSurfaceFormatKHR> formats;
 		std::vector<VkPresentModeKHR> presentModes;
 	};
+
+#ifdef CP_DEBUG
+	constexpr bool VALIDATION_LAYERS_ENABLED = true;
+#else
+	constexpr bool VALIDATION_LAYERS_ENABLED = false;
+#endif
 }

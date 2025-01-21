@@ -15,9 +15,9 @@ namespace cp {
 		Window(EventHandler& eventHandler, const WindowSpecification& spec);
 		~Window();
 
-		GLFWwindow* glfwHandle() { return window_; }
-		VkSurfaceKHR surface() const { return surface_; }
-		bool minimized() const { return minimized_; }
+		GLFWwindow* glfwHandle() { return mWindow; }
+		VkSurfaceKHR surface() const { return mSurface; }
+		bool minimized() const { return mMinimized; }
 
 		void pollEvents();
 		bool shouldClose() const;
@@ -30,10 +30,10 @@ namespace cp {
 		void registerEvents();
 
 	private:
-		WindowSpecification spec_{};
-		GLFWwindow* window_;
-		VkSurfaceKHR surface_ = VK_NULL_HANDLE;
-		EventHandler& evtHandler_;
-		bool minimized_ = false;
+		WindowSpecification mSpec{};
+		GLFWwindow* mWindow;
+		VkSurfaceKHR mSurface = VK_NULL_HANDLE;
+		EventHandler& mEvtHandler;
+		bool mMinimized = false;
 	};
 }

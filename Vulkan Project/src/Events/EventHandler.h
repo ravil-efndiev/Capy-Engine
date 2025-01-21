@@ -12,6 +12,6 @@ namespace cp {
 		void subscribeToResizeEvt(const ResizeEventListener& listener);
 
 	private:
-		std::vector<ResizeEventListener> resizeEventListeners;
+		std::vector<ResizeEventListener> mResizeEventListeners;
 	};
 }

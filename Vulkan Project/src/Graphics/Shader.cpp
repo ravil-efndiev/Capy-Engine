@@ -3,18 +3,18 @@
 
 namespace cp {
 	Shader::Shader(Device& device, const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
-		: device_(device) {
+		: mDevice(device) {
 
-		vshData_ = readFileBin(vertexShaderPath);
-		fshData_ = readFileBin(fragmentShaderPath);
+		mVshData = readFileBin(vertexShaderPath);
+		mFshData = readFileBin(fragmentShaderPath);
 
-		vertexShaderModule = createShaderModule(vshData_);
-		fragmentShaderModule = createShaderModule(fshData_);
+		vertexShaderModule = createShaderModule(mVshData);
+		fragmentShaderModule = createShaderModule(mFshData);
 	}
 
 	Shader::~Shader() {
-		vkDestroyShaderModule(device_.vkDevice(), vertexShaderModule, nullptr);
-		vkDestroyShaderModule(device_.vkDevice(), fragmentShaderModule, nullptr);
+		vkDestroyShaderModule(mDevice.vkDevice(), vertexShaderModule, nullptr);
+		vkDestroyShaderModule(mDevice.vkDevice(), fragmentShaderModule, nullptr);
 	}
 
 	VkShaderModule Shader::createShaderModule(const std::vector<char>& data) {
@@ -25,7 +25,7 @@ namespace cp {
 		createInfo.codeSize = data.size();
 		createInfo.pCode = reinterpret_cast<const uint*>(data.data());
 
-		VkResult result = vkCreateShaderModule(device_.vkDevice(), &createInfo, nullptr, &shader);
+		VkResult result = vkCreateShaderModule(mDevice.vkDevice(), &createInfo, nullptr, &shader);
 		checkVkResult(result, "couldnt compile shader module");
 		return shader;
 	}

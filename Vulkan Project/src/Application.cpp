@@ -21,27 +21,27 @@ namespace cp {
 	}
 
 	void Application::start() {
-		context_ = std::make_unique<VulkanContext>();
+		mContext = std::make_unique<VulkanContext>();
 
-		WindowSpecification winSpec{ context_->instance(), 1200, 920, "vk project" };
-		window_ = std::make_unique<Window>(evtHandler_, winSpec);
-		device_ = std::make_unique<Device>(context_->instance(), window_->surface());
-		swapchain_ = std::make_unique<Swapchain>(*device_, *window_);
-		renderer_ = std::make_unique<Renderer>(*device_, *swapchain_, evtHandler_);
+		WindowSpecification winSpec{ mContext->instance(), 1200, 920, "vk project" };
+		mWindow = std::make_unique<Window>(mEvtHandler, winSpec);
+		mDevice = std::make_unique<Device>(mContext->instance(), mWindow->surface());
+		mSwapchain = std::make_unique<Swapchain>(*mDevice, *mWindow);
+		mRenderer = std::make_unique<Renderer>(*mDevice, *mSwapchain, mEvtHandler);
 
 	}
 
 	void Application::update() {
-		while (!window_->shouldClose()) {
-			if (window_->minimized()) {
-				device_->wait();
-				window_->wait();
+		while (!mWindow->shouldClose()) {
+			if (mWindow->minimized()) {
+				mDevice->wait();
+				mWindow->wait();
 				continue;
 			}
-			window_->pollEvents();
-			renderer_->draw();
+			mWindow->pollEvents();
+			mRenderer->draw();
 		}
 
-		device_->wait();
+		mDevice->wait();
 	}
 }

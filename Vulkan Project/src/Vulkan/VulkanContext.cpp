@@ -9,13 +9,13 @@ namespace cp {
 
 	VulkanContext::~VulkanContext() {
 		if (VALIDATION_LAYERS_ENABLED) {
-			auto destroyDebugMessenger = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance_, "vkDestroyDebugUtilsMessengerEXT");
+			auto destroyDebugMessenger = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(mInstance, "vkDestroyDebugUtilsMessengerEXT");
 			CP_ASSERT(destroyDebugMessenger != nullptr, "couldnt get vkDestroyDebugUtilsMessengerEXT function");
-			destroyDebugMessenger(instance_, debugMessenger_, nullptr);
+			destroyDebugMessenger(mInstance, mDebugMessenger, nullptr);
 		}
 		CP_DEBUG_LOG("debug messenger destroyed");
 
-		vkDestroyInstance(instance_, nullptr);
+		vkDestroyInstance(mInstance, nullptr);
 		CP_DEBUG_LOG("instance destroyed");
 
 		glfwTerminate();
@@ -38,9 +38,9 @@ namespace cp {
 		uint reqExtensionCount = 0;
 		const char** requiredExtensions = glfwGetRequiredInstanceExtensions(&reqExtensionCount);
 		std::vector<const char*> extensions;
-		extensions.reserve(reqExtensionCount + enabledExtensions_.size());
+		extensions.reserve(reqExtensionCount + mEnabledExtensions.size());
 		extensions.insert(extensions.end(), requiredExtensions, requiredExtensions + reqExtensionCount);
-		extensions.insert(extensions.end(), enabledExtensions_.begin(), enabledExtensions_.end());
+		extensions.insert(extensions.end(), mEnabledExtensions.begin(), mEnabledExtensions.end());
 
 		VkInstanceCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -49,14 +49,14 @@ namespace cp {
 		createInfo.ppEnabledExtensionNames = extensions.data();
 
 		if (VALIDATION_LAYERS_ENABLED) {
-			createInfo.enabledLayerCount = (uint)validationLayers_.size();
-			createInfo.ppEnabledLayerNames = validationLayers_.data();
+			createInfo.enabledLayerCount = (uint)mValidationLayers.size();
+			createInfo.ppEnabledLayerNames = mValidationLayers.data();
 		}
 		else {
 			createInfo.enabledLayerCount = 0;
 		}
 
-		VkResult instanceRes = vkCreateInstance(&createInfo, nullptr, &instance_);
+		VkResult instanceRes = vkCreateInstance(&createInfo, nullptr, &mInstance);
 		checkVkResult(instanceRes, "couldn't create Vulkan instance");
 	}
 
@@ -85,9 +85,9 @@ namespace cp {
 		createInfo.pfnUserCallback = debugCallback;
 
 		if (VALIDATION_LAYERS_ENABLED) {
-			auto createDebugMessenger = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance_, "vkCreateDebugUtilsMessengerEXT");
+			auto createDebugMessenger = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(mInstance, "vkCreateDebugUtilsMessengerEXT");
 			CP_ASSERT(createDebugMessenger != nullptr, "couldnt get vkCreateDebugUtilsMessengerEXT function");
-			VkResult messengerRes = createDebugMessenger(instance_, &createInfo, nullptr, &debugMessenger_);
+			VkResult messengerRes = createDebugMessenger(mInstance, &createInfo, nullptr, &mDebugMessenger);
 			CP_ASSERT(messengerRes == VK_SUCCESS, "createDebugMessenger aka vkCreateDebugUtilsMessengerEXT failed");
 		}
 	}
@@ -98,7 +98,7 @@ namespace cp {
 		std::vector<VkExtensionProperties> extensionsAvail(extCount);
 		vkEnumerateInstanceExtensionProperties(nullptr, &extCount, extensionsAvail.data());
 
-		std::unordered_set<std::string> extensionsReq(enabledExtensions_.begin(), enabledExtensions_.end());
+		std::unordered_set<std::string> extensionsReq(mEnabledExtensions.begin(), mEnabledExtensions.end());
 
 		CP_DEBUG_LOG("\VULKAN EXTENSIONS");
 		for (const auto& extension : extensionsAvail) {

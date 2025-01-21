@@ -8,14 +8,14 @@ namespace cp {
 		RenderPass(Device& device, Swapchain& swapchain);
 		~RenderPass();
 
-		VkRenderPass vkHandle() const { return pass_; }
+		VkRenderPass vkHandle() const { return mPass; }
 
 	private:
 		void create();
 
 	private:
-		Device& device_;
-		Swapchain& swapchain_;
-		VkRenderPass pass_ = VK_NULL_HANDLE;
+		Device& mDevice;
+		Swapchain& mSwapchain;
+		VkRenderPass mPass = VK_NULL_HANDLE;
 	};
 }

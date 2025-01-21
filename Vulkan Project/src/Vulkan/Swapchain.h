@@ -13,9 +13,9 @@ namespace cp {
 		Swapchain(Device& device, Window& window);
 		~Swapchain();
 
-		VkSwapchainKHR vkHandle() const { return swapchain_; }
-		VkExtent2D extent() const { return swapExtent_; }
-		VkSurfaceFormatKHR format() const { return surfaceFormat_; }
+		VkSwapchainKHR vkHandle() const { return mSwapchain; }
+		VkExtent2D extent() const { return mSwapExtent; }
+		VkSurfaceFormatKHR format() const { return mSurfaceFormat; }
 		std::vector<Image> images() const;
 
 		void destroy();
@@ -30,12 +30,12 @@ namespace cp {
 		VkExtent2D selectSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
 	private:
-		Device& device_;
-		Window& window_;
-		VkSwapchainKHR swapchain_ = VK_NULL_HANDLE;
-		std::vector<VkImage> images_;
-		std::vector<VkImageView> imageViews_;
-		VkSurfaceFormatKHR surfaceFormat_;
-		VkExtent2D swapExtent_;
+		Device& mDevice;
+		Window& mWindow;
+		VkSwapchainKHR mSwapchain = VK_NULL_HANDLE;
+		std::vector<VkImage> mImages;
+		std::vector<VkImageView> mImageViews;
+		VkSurfaceFormatKHR mSurfaceFormat;
+		VkExtent2D mSwapExtent;
 	};
 }

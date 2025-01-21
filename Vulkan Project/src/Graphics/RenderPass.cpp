@@ -2,17 +2,17 @@
 
 namespace cp {
 	RenderPass::RenderPass(Device& device, Swapchain& swapchain)
-		: device_(device), swapchain_(swapchain) {
+		: mDevice(device), mSwapchain(swapchain) {
 		create();
 	}
 
 	RenderPass::~RenderPass() {
-		vkDestroyRenderPass(device_.vkDevice(), pass_, nullptr);
+		vkDestroyRenderPass(mDevice.vkDevice(), mPass, nullptr);
 	}
 
 	void RenderPass::create() {
 		VkAttachmentDescription attachment{};
-		attachment.format = swapchain_.format().format;
+		attachment.format = mSwapchain.format().format;
 		attachment.samples = VK_SAMPLE_COUNT_1_BIT;
 		attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -49,7 +49,7 @@ namespace cp {
 		createInfo.dependencyCount = 1;
 		createInfo.pDependencies = &dependency;
 
-		VkResult result = vkCreateRenderPass(device_.vkDevice(), &createInfo, nullptr, &pass_);
+		VkResult result = vkCreateRenderPass(mDevice.vkDevice(), &createInfo, nullptr, &mPass);
 		checkVkResult(result, "failed to create render pass");
 	}
 }

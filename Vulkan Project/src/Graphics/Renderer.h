@@ -9,6 +9,8 @@
 namespace cp {
 	struct RendererConfiguration {
 		uint framesInFlight = 2;
+
+		PipelineConfiguration pipelineConfig{};
 	};
 
 	class Renderer {
@@ -33,19 +35,19 @@ namespace cp {
 		void recreateSwapchain();
 
 	private:
-		RendererConfiguration configuration_;
-		std::unique_ptr<Pipeline> pipeline_;
-		std::unique_ptr<RenderPass> renderPass_;
-		std::vector<std::unique_ptr<Framebuffer>> framebuffers_;
-		Device& device_;
-		Swapchain& swapchain_;
-		VkCommandPool cmdPool_;
-		std::vector<VkCommandBuffer> cmdBuffers_;
-		std::vector<VkSemaphore> imageAvailSemaphores_;
-		std::vector<VkSemaphore> renderFinishedSemaphores_;
-		std::vector<VkFence> inFlightFences_;
+		RendererConfiguration mConfig;
+		std::unique_ptr<Pipeline> mPipeline;
+		std::unique_ptr<RenderPass> mRenderPass;
+		std::vector<std::unique_ptr<Framebuffer>> mFramebuffers;
+		Device& mDevice;
+		Swapchain& mSwapchain;
+		VkCommandPool mCmdPool;
+		std::vector<VkCommandBuffer> mCmdBuffers;
+		std::vector<VkSemaphore> mImageAvailSemaphores;
+		std::vector<VkSemaphore> mRenderFinishedSemaphores;
+		std::vector<VkFence> mInFlightFences;
 
-		int viewportWidth_, viewportHeight_;
-		uint currentFrame_ = 0;
+		int mViewportWidth, mViewportHeight;
+		uint mCurrentFrame = 0;
 	};
 }

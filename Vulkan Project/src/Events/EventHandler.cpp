@@ -6,7 +6,7 @@ namespace cp {
 		case EventType::framebufferResize:
 			const ResizeEvent* castedEvt = dynamic_cast<const ResizeEvent*>(event);
 
-			for (auto& listener : resizeEventListeners) {
+			for (auto& listener : mResizeEventListeners) {
 				listener(castedEvt->width, castedEvt->height);
 			}
 			break;
@@ -14,6 +14,6 @@ namespace cp {
 	}
 
 	void EventHandler::subscribeToResizeEvt(const ResizeEventListener& listener) {
-		resizeEventListeners.push_back(listener);
+		mResizeEventListeners.push_back(listener);
 	}
 }

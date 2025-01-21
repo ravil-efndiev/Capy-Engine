@@ -13,21 +13,21 @@ namespace cp {
 		~Application();
 		void run();
 
-		VulkanContext& context() { return *context_; }
-		Window& window() { return *window_; }
-		Device& device() { return *device_; }
-		Swapchain& swapchain() { return *swapchain_; }
+		VulkanContext& context() { return *mContext; }
+		Window& window() { return *mWindow; }
+		Device& device() { return *mDevice; }
+		Swapchain& swapchain() { return *mSwapchain; }
 
 	private:
 		void start();
 		void update();
 
 	private:
-		std::unique_ptr<VulkanContext> context_;
-		std::unique_ptr<Window> window_;
-		std::unique_ptr<Device> device_;
-		std::unique_ptr<Swapchain> swapchain_;
-		std::unique_ptr<Renderer> renderer_;
-		EventHandler evtHandler_;
+		std::unique_ptr<VulkanContext> mContext;
+		std::unique_ptr<Window> mWindow;
+		std::unique_ptr<Device> mDevice;
+		std::unique_ptr<Swapchain> mSwapchain;
+		std::unique_ptr<Renderer> mRenderer;
+		EventHandler mEvtHandler;
 	};
 }

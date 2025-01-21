@@ -15,8 +15,8 @@ namespace cp {
 		VkShaderModule createShaderModule(const std::vector<char>& data);
 
 	private:
-		Device& device_;
-		std::vector<char> vshData_;
-		std::vector<char> fshData_;
+		Device& mDevice;
+		std::vector<char> mVshData;
+		std::vector<char> mFshData;
 	};
 }

@@ -1,16 +1,16 @@
 #include "Device.h"
 
 namespace cp {
-	Device::Device(VkInstance instance, VkSurfaceKHR surface) : instance_(instance), surface_(surface) {
+	Device::Device(VkInstance instance, VkSurfaceKHR surface) : mInstance(instance), mSurface(surface) {
 		uint deviceCount = 0;
-		vkEnumeratePhysicalDevices(instance_, &deviceCount, nullptr);
+		vkEnumeratePhysicalDevices(mInstance, &deviceCount, nullptr);
 
 		if (deviceCount == 0) {
 			throw std::runtime_error("no GPUs with Vulkan support found");
 		}
 
 		std::vector<VkPhysicalDevice> devicesAvail(deviceCount);
-		vkEnumeratePhysicalDevices(instance_, &deviceCount, devicesAvail.data());
+		vkEnumeratePhysicalDevices(mInstance, &deviceCount, devicesAvail.data());
 
 		setSuitableDevice(devicesAvail);
 		VkPhysicalDeviceFeatures features;
@@ -38,23 +38,23 @@ namespace cp {
 		createInfo.queueCreateInfoCount = queueCreateInfos.size();
 		createInfo.pEnabledFeatures = &features;
 
-		createInfo.enabledExtensionCount = deviceExtensions_.size();
-		createInfo.ppEnabledExtensionNames = deviceExtensions_.data();
+		createInfo.enabledExtensionCount = mDeviceExtensions.size();
+		createInfo.ppEnabledExtensionNames = mDeviceExtensions.data();
 		createInfo.enabledLayerCount = 0;
 
-		VkResult result = vkCreateDevice(physicalDevice_, &createInfo, nullptr, &device_);
+		VkResult result = vkCreateDevice(physicalDevice_, &createInfo, nullptr, &mDevice);
 		checkVkResult(result, "failed to create Vulkan logical device");
 
-		vkGetDeviceQueue(device_, indicies.graphicsFamily.value(), 0, &graphicsQueue_);
+		vkGetDeviceQueue(mDevice, indicies.graphicsFamily.value(), 0, &mGraphicsQueue);
 	}
 
 	Device::~Device() {
-		vkDestroyDevice(device_, nullptr);
+		vkDestroyDevice(mDevice, nullptr);
 		CP_DEBUG_LOG("device destroyed");
 	}
 
 	void Device::wait() {
-		vkDeviceWaitIdle(device_);
+		vkDeviceWaitIdle(mDevice);
 	}
 
 	void Device::setSuitableDevice(const std::vector<VkPhysicalDevice>& devices) {
@@ -82,7 +82,7 @@ namespace cp {
 		std::vector<VkExtensionProperties> extensionsAvail(deviceExtCount);
 		vkEnumerateDeviceExtensionProperties(device, nullptr, &deviceExtCount, extensionsAvail.data());
 
-		std::unordered_set<std::string> extensionsReq(deviceExtensions_.begin(), deviceExtensions_.end());
+		std::unordered_set<std::string> extensionsReq(mDeviceExtensions.begin(), mDeviceExtensions.end());
 
 		CP_DEBUG_LOG("\DEVICE EXTENSIONS");
 		for (const auto& extension : extensionsAvail) {
@@ -124,7 +124,7 @@ namespace cp {
 				indices.graphicsFamily = i;
 
 			VkBool32 presentSupport;
-			vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface_, &presentSupport);
+			vkGetPhysicalDeviceSurfaceSupportKHR(device, i, mSurface, &presentSupport);
 
 			if (presentSupport)
 				indices.presentFamily = i;
@@ -136,22 +136,22 @@ namespace cp {
 
 	SwapchainSupportDetails Device::querySwapchainSupport(VkPhysicalDevice device) const {
 		SwapchainSupportDetails details;
-		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface_, &details.capabilities);
+		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, mSurface, &details.capabilities);
 
 		uint formatCount;
-		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, &formatCount, nullptr);
+		vkGetPhysicalDeviceSurfaceFormatsKHR(device, mSurface, &formatCount, nullptr);
 
 		if (formatCount > 0) {
 			details.formats.resize(formatCount);
-			vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, &formatCount, details.formats.data());
+			vkGetPhysicalDeviceSurfaceFormatsKHR(device, mSurface, &formatCount, details.formats.data());
 		}
 
 		uint presentModeCount;
-		vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &presentModeCount, nullptr);
+		vkGetPhysicalDeviceSurfacePresentModesKHR(device, mSurface, &presentModeCount, nullptr);
 
 		if (presentModeCount > 0) {
 			details.presentModes.resize(presentModeCount);
-			vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, &presentModeCount, details.presentModes.data());
+			vkGetPhysicalDeviceSurfacePresentModesKHR(device, mSurface, &presentModeCount, details.presentModes.data());
 		}
 
 		return details;

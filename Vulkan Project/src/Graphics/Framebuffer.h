@@ -15,14 +15,14 @@ namespace cp {
 		Framebuffer(Device& device, const FramebufferSpecification& spec);
 		~Framebuffer();
 
-		VkFramebuffer vkHandle() const { return framebuffer_; }
+		VkFramebuffer vkHandle() const { return mFramebuffer; }
 
 	private:
 		void create();
 
 	private:
-		FramebufferSpecification spec_;
-		Device& device_;
-		VkFramebuffer framebuffer_ = VK_NULL_HANDLE;
+		FramebufferSpecification mSpec;
+		Device& mDevice;
+		VkFramebuffer mFramebuffer = VK_NULL_HANDLE;
 	};
 }
