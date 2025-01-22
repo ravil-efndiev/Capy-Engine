@@ -10,13 +10,11 @@ namespace cp {
 		enum VertexType {
 			PositionColorVertex,
 			TexCoordVertex,
-			MeshVertex,
 		};
 
 		VertexType vertexType = PositionColorVertex;
 		VkCullModeFlags culling = VK_CULL_MODE_NONE;
 		VkPolygonMode polygonMode = VK_POLYGON_MODE_FILL;
-
 	};
 
 	class Pipeline {
@@ -28,6 +26,7 @@ namespace cp {
 		void create();
 
 		VkPipeline vkHandle() const { return mPipeline; }
+		PipelineConfiguration configuration() const { return mConfig; }
 
 	private:
 		void setFixedState();

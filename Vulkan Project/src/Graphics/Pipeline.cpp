@@ -35,9 +35,15 @@ namespace cp {
 		mDynamicState.dynamicStateCount = mDynamicStates.size();
 		mDynamicState.pDynamicStates = mDynamicStates.data();
 
-		if (mConfig.vertexType == PipelineConfiguration::PositionColorVertex) {
+		switch (mConfig.vertexType) {
+		case PipelineConfiguration::PositionColorVertex:
 			mBindingDesc = PositionColorVertex::bindingDescription();
 			mAttribDescs = PositionColorVertex::attributeDescriptions();
+			break;
+		case PipelineConfiguration::TexCoordVertex:
+			mBindingDesc = SpriteVertex::bindingDescription();
+			mAttribDescs = SpriteVertex::attributeDescriptions();
+			break;
 		}
 
 		mVertexInput.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;

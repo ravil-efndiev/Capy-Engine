@@ -6,13 +6,9 @@
 #include "Framebuffer.h"
 #include "RenderPass.h"
 #include "Buffers.h"
+#include "Mesh.h"
 
 namespace cp {
-	struct Mesh {
-		VertexBuffer* vertexBuffer;
-		IndexBuffer* indexBuffer;
-	};
-
 	struct RendererConfiguration {
 		uint framesInFlight = 2;
 
@@ -29,7 +25,8 @@ namespace cp {
 		);
 		~Renderer();
 
-		void submitMesh(const Mesh& vb);
+		void submitMesh(const Mesh<PositionColorVertex>& mesh);
+		void submitMesh(const Mesh<SpriteVertex>& mesh);
 
 		void setViewportSize(int width, int height);
 
@@ -38,9 +35,9 @@ namespace cp {
 		void createFramebuffers();
 		void createSyncObjects();
 
-		void draw(const Mesh& mesh);
+		void draw(VertexBuffer& vb, IndexBuffer& ib);
 
-		void recordCommandBuffer(uint imageIdx, const Mesh& mesh);
+		void recordCommandBuffer(uint imageIdx, VertexBuffer& vb, IndexBuffer& ib);
 		void recreateSwapchain();
 
 	private:

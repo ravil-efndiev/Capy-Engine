@@ -47,8 +47,7 @@ namespace cp {
 			0, 1, 2, 2, 3, 0
 		};
 
-		mVb = std::make_unique<VertexBuffer>(*mDevice, vertices);
-		mIb = std::make_unique<IndexBuffer>(*mDevice, indices);
+		mMesh = std::make_unique<Mesh<PositionColorVertex>>(*mDevice, vertices, indices);
 	}
 
 	void Application::update() {
@@ -61,7 +60,7 @@ namespace cp {
 			Time::update();
 			mWindow->pollEvents();
 			
-			mRenderer->submitMesh({ mVb.get(), mIb.get() });
+			mRenderer->submitMesh(*mMesh);
 
 			//CP_DEBUG_LOG("%f", 1.f / Time::dt());
 		}
