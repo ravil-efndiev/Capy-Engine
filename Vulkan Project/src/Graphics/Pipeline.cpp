@@ -67,9 +67,9 @@ namespace cp {
 		mViewportState.pScissors = &mScissor;
 
 		mRasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-		mRasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+		mRasterizer.cullMode = mConfig.culling;
 		mRasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
-		mRasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+		mRasterizer.polygonMode = mConfig.polygonMode;
 		mRasterizer.depthClampEnable = VK_FALSE;
 		mRasterizer.rasterizerDiscardEnable = VK_FALSE;
 		mRasterizer.lineWidth = 1.0f;

@@ -102,7 +102,11 @@ namespace cp {
 		}
 	}
 
-	void Renderer::draw() {
+	void Renderer::submitMesh(const Mesh& mesh) {
+		draw(mesh);
+	}
+
+	void Renderer::draw(const Mesh& mesh) {
 		if (mViewportWidth <= 0 || mViewportHeight <= 0) {
 			return;
 		}
@@ -131,7 +135,7 @@ namespace cp {
 		vkResetFences(mDevice.vkDevice(), 1, &mInFlightFences[mCurrentFrame]);
 
 		vkResetCommandBuffer(mCmdBuffers[mCurrentFrame], 0);
-		recordCommandBuffer(imageIdx);
+		recordCommandBuffer(imageIdx, mesh);
 
 		VkSubmitInfo submitInfo{};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -177,7 +181,7 @@ namespace cp {
 		mViewportHeight = height;
 	}
 
-	void Renderer::recordCommandBuffer(uint imageIdx) {
+	void Renderer::recordCommandBuffer(uint imageIdx, const Mesh& mesh) {
 		VkCommandBufferBeginInfo bufferBeginInfo{};
 		bufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -213,7 +217,11 @@ namespace cp {
 		scissor.extent = mSwapchain.extent();
 		vkCmdSetScissor(mCmdBuffers[mCurrentFrame], 0, 1, &scissor);
 
-		vkCmdDraw(mCmdBuffers[mCurrentFrame], 3, 1, 0, 0);
+		VkBuffer vertexBuffers[] = { mesh.vertexBuffer->vkHandle() };
+		VkDeviceSize offsets[] = { 0 };
+		vkCmdBindVertexBuffers(mCmdBuffers[mCurrentFrame], 0, 1, vertexBuffers, offsets);
+		vkCmdBindIndexBuffer(mCmdBuffers[mCurrentFrame], mesh.indexBuffer->vkHandle(), 0, VK_INDEX_TYPE_UINT16);
+		vkCmdDrawIndexed(mCmdBuffers[mCurrentFrame], mesh.indexBuffer->indexCount(), 1, 0, 0, 0);
 
 		vkCmdEndRenderPass(mCmdBuffers[mCurrentFrame]);
 

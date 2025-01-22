@@ -21,7 +21,7 @@
 	#define NOMINMAX
 	#include <Windows.h>
 	#define CP_VA_ARGS(...) , __VA_ARGS__
-#elif defined(__GNUC__) or defined(__clang__)
+#elif defined(__GNUC__) || defined(__clang__)
 	#define CP_VA_ARGS(...) , ##__VA_ARGS__
 #endif
 
@@ -62,8 +62,8 @@ namespace cp {
 	};
 
 #ifdef CP_DEBUG
-	constexpr bool VALIDATION_LAYERS_ENABLED = true;
+	constexpr bool gValidationLayersEnabled = true;
 #else
-	constexpr bool VALIDATION_LAYERS_ENABLED = false;
+	constexpr bool gValidationLayersEnabled = false;
 #endif
 }

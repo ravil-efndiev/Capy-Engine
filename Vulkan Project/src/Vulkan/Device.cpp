@@ -57,6 +57,19 @@ namespace cp {
 		vkDeviceWaitIdle(mDevice);
 	}
 
+	uint Device::findMemoryType(uint typeFilterBits, VkMemoryPropertyFlags propertyFlags) {
+		VkPhysicalDeviceMemoryProperties props;
+		vkGetPhysicalDeviceMemoryProperties(physicalDevice_, &props);
+		
+		for (int i = 0; i < props.memoryTypeCount; i++) {
+			if (typeFilterBits & (1 << i) && (props.memoryTypes[i].propertyFlags & propertyFlags) == propertyFlags) {
+				return i;
+			}
+		}
+
+		throw std::runtime_error("failed to find suitable memory type");
+	}
+
 	void Device::setSuitableDevice(const std::vector<VkPhysicalDevice>& devices) {
 		for (VkPhysicalDevice device : devices) {
 			if (!deviceValid(device)) continue;

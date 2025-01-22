@@ -14,6 +14,9 @@ namespace cp {
 		};
 
 		VertexType vertexType = PositionColorVertex;
+		VkCullModeFlags culling = VK_CULL_MODE_NONE;
+		VkPolygonMode polygonMode = VK_POLYGON_MODE_FILL;
+
 	};
 
 	class Pipeline {

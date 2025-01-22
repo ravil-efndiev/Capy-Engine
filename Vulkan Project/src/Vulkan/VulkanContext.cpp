@@ -8,7 +8,7 @@ namespace cp {
 	}
 
 	VulkanContext::~VulkanContext() {
-		if (VALIDATION_LAYERS_ENABLED) {
+		if (gValidationLayersEnabled) {
 			auto destroyDebugMessenger = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(mInstance, "vkDestroyDebugUtilsMessengerEXT");
 			CP_ASSERT(destroyDebugMessenger != nullptr, "couldnt get vkDestroyDebugUtilsMessengerEXT function");
 			destroyDebugMessenger(mInstance, mDebugMessenger, nullptr);
@@ -48,7 +48,7 @@ namespace cp {
 		createInfo.enabledExtensionCount = extensions.size();
 		createInfo.ppEnabledExtensionNames = extensions.data();
 
-		if (VALIDATION_LAYERS_ENABLED) {
+		if (gValidationLayersEnabled) {
 			createInfo.enabledLayerCount = (uint)mValidationLayers.size();
 			createInfo.ppEnabledLayerNames = mValidationLayers.data();
 		}
@@ -84,7 +84,7 @@ namespace cp {
 			VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
 		createInfo.pfnUserCallback = debugCallback;
 
-		if (VALIDATION_LAYERS_ENABLED) {
+		if (gValidationLayersEnabled) {
 			auto createDebugMessenger = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(mInstance, "vkCreateDebugUtilsMessengerEXT");
 			CP_ASSERT(createDebugMessenger != nullptr, "couldnt get vkCreateDebugUtilsMessengerEXT function");
 			VkResult messengerRes = createDebugMessenger(mInstance, &createInfo, nullptr, &mDebugMessenger);

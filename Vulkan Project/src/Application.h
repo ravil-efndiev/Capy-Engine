@@ -28,6 +28,8 @@ namespace cp {
 		std::unique_ptr<Device> mDevice;
 		std::unique_ptr<Swapchain> mSwapchain;
 		std::unique_ptr<Renderer> mRenderer;
+		std::unique_ptr<VertexBuffer> mVb;
+		std::unique_ptr<IndexBuffer> mIb;
 		EventHandler mEvtHandler;
 	};
 }

@@ -13,6 +13,8 @@ namespace cp {
 		VkQueue graphicsQueue() const { return mGraphicsQueue; }
 
 		void wait();
+		
+		uint findMemoryType(uint typeFilterBits, VkMemoryPropertyFlags propertyFlags);
 
 	private:
 		void setSuitableDevice(const std::vector<VkPhysicalDevice>& devices);

@@ -5,8 +5,14 @@
 #include "Pipeline.h"
 #include "Framebuffer.h"
 #include "RenderPass.h"
+#include "Buffers.h"
 
 namespace cp {
+	struct Mesh {
+		VertexBuffer* vertexBuffer;
+		IndexBuffer* indexBuffer;
+	};
+
 	struct RendererConfiguration {
 		uint framesInFlight = 2;
 
@@ -23,7 +29,8 @@ namespace cp {
 		);
 		~Renderer();
 
-		void draw();
+		void submitMesh(const Mesh& vb);
+
 		void setViewportSize(int width, int height);
 
 	private:
@@ -31,7 +38,9 @@ namespace cp {
 		void createFramebuffers();
 		void createSyncObjects();
 
-		void recordCommandBuffer(uint imageIdx);
+		void draw(const Mesh& mesh);
+
+		void recordCommandBuffer(uint imageIdx, const Mesh& mesh);
 		void recreateSwapchain();
 
 	private:
