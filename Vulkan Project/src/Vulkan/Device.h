@@ -12,9 +12,9 @@ namespace cp {
 		QueueFamilyIndices queueFamilies() const { return findQueueFamilies(physicalDevice_); }
 		VkQueue graphicsQueue() const { return mGraphicsQueue; }
 
-		void wait();
+		void wait() const;
 		
-		uint findMemoryType(uint typeFilterBits, VkMemoryPropertyFlags propertyFlags);
+		uint findMemoryType(uint typeFilterBits, VkMemoryPropertyFlags propertyFlags) const;
 
 	private:
 		void setSuitableDevice(const std::vector<VkPhysicalDevice>& devices);

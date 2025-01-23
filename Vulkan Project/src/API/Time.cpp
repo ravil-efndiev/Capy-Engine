@@ -6,7 +6,7 @@ namespace cp {
 	float Time::sDeltaTime = 0;
 
 	void Time::update()  {
-		sCurrentTime = glfwGetTime();
+		sCurrentTime = (float)glfwGetTime();
 		sDeltaTime = sCurrentTime - sLastTime;
 		sLastTime = sCurrentTime;
 	}

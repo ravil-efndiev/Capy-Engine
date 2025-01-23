@@ -1,7 +1,9 @@
 #include "VulkanContext.h"
 
 namespace cp {
-	VulkanContext::VulkanContext() {
+	VulkanContext::VulkanContext(const ApplicationConfiguration& appConfig)
+		: mAppConfig(appConfig) {
+
 		glfwInit();
 		createInstance();
 		createDebugMessenger();
@@ -29,11 +31,11 @@ namespace cp {
 
 		VkApplicationInfo appInfo{};
 		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-		appInfo.pApplicationName = "vk project";
-		appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+		appInfo.pApplicationName = mAppConfig.applicationName.data();
+		appInfo.applicationVersion = mAppConfig.applicationVersion;
 		appInfo.apiVersion = VK_API_VERSION_1_0;
-		appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-		appInfo.pEngineName = "none";
+		appInfo.engineVersion = gConstants.engineVersion;
+		appInfo.pEngineName = "Capy Engine";
 
 		uint reqExtensionCount = 0;
 		const char** requiredExtensions = glfwGetRequiredInstanceExtensions(&reqExtensionCount);
@@ -45,7 +47,7 @@ namespace cp {
 		VkInstanceCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		createInfo.pApplicationInfo = &appInfo;
-		createInfo.enabledExtensionCount = extensions.size();
+		createInfo.enabledExtensionCount = (uint)extensions.size();
 		createInfo.ppEnabledExtensionNames = extensions.data();
 
 		if (gValidationLayersEnabled) {
@@ -100,7 +102,7 @@ namespace cp {
 
 		std::unordered_set<std::string> extensionsReq(mEnabledExtensions.begin(), mEnabledExtensions.end());
 
-		CP_DEBUG_LOG("\VULKAN EXTENSIONS");
+		CP_DEBUG_LOG("VULKAN EXTENSIONS");
 		for (const auto& extension : extensionsAvail) {
 			CP_DEBUG_LOG("%s", extension.extensionName);
 			extensionsReq.erase(extension.extensionName);

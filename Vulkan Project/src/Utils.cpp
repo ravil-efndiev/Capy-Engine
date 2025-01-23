@@ -35,11 +35,11 @@ namespace cp {
 #endif
 	}
 
-	std::vector<char> readFileBin(const std::string& path) {
+	std::vector<char> readFileBin(const std::filesystem::path& path) {
 		std::ifstream file(path, std::ios::binary | std::ios::ate);
 
 		if (!file.is_open()) {
-			throw std::runtime_error("couldnt open file from path '" + path + "'");
+			throw std::runtime_error("couldnt open file from path '" + path.string() + "'");
 		}
 
 		std::vector<char> bytes(file.tellg());

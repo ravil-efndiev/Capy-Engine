@@ -5,7 +5,11 @@
 namespace cp {
 	class Shader {
 	public:
-		Shader(Device& device, const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+		Shader(
+			Device& device,
+			const std::filesystem::path& vertexShaderPath,
+			const std::filesystem::path& fragmentShaderPath
+		);
 		~Shader();
 
 		VkShaderModule vertexShaderModule;

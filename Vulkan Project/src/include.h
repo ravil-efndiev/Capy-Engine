@@ -16,6 +16,7 @@
 #include <sstream>
 #include <functional>
 #include <memory>
+#include <filesystem>
 
 #ifdef _MSC_VER
 	#define NOMINMAX
@@ -56,7 +57,7 @@ namespace cp {
 	};
 
 	struct SwapchainSupportDetails {
-		VkSurfaceCapabilitiesKHR capabilities;
+		VkSurfaceCapabilitiesKHR capabilities{};
 		std::vector<VkSurfaceFormatKHR> formats;
 		std::vector<VkPresentModeKHR> presentModes;
 	};
@@ -66,4 +67,12 @@ namespace cp {
 #else
 	constexpr bool gValidationLayersEnabled = false;
 #endif
+
+	struct Constants {
+		const uint engineVersion = VK_MAKE_VERSION(1, 0, 0);
+		const std::filesystem::path assetsDir = "assets";
+		const std::filesystem::path spirvDir = assetsDir / "shadersbin";
+	};
+
+	inline const Constants gConstants{};
 }

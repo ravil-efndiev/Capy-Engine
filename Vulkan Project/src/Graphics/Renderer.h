@@ -10,7 +10,7 @@
 
 namespace cp {
 	struct PipelineHandle {
-		uint id = -1; // will be more then size of a vector (uint32_t max)
+		uint id = (uint)(-1); // will be more then size of a vector (uint32_t max)
 	};
 
 	struct RendererConfiguration {

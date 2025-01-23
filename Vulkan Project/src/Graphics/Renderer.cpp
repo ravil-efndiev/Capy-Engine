@@ -24,7 +24,7 @@ namespace cp {
 		vkDestroyCommandPool(mDevice.vkDevice(), mCmdPool, nullptr);
 		CP_DEBUG_LOG("command pool destroyed");
 
-		for (int i = 0; i < mConfig.framesInFlight; i++) {
+		for (size_t i = 0; i < mConfig.framesInFlight; i++) {
 			vkDestroySemaphore(mDevice.vkDevice(), mImageAvailSemaphores[i], nullptr);
 			vkDestroySemaphore(mDevice.vkDevice(), mRenderFinishedSemaphores[i], nullptr);
 			vkDestroyFence(mDevice.vkDevice(), mInFlightFences[i], nullptr);
@@ -34,7 +34,7 @@ namespace cp {
 
 	PipelineHandle Renderer::addPipelineConfiguration(const PipelineConfiguration& config) {
 		mPipelines.push_back(std::make_unique<Pipeline>(mDevice, mSwapchain, config));
-		return { mPipelines.size() - 1; }
+		return { (uint)mPipelines.size() - 1 };
 	}
 
 	void Renderer::usePipeline(PipelineHandle handle) {
@@ -62,7 +62,7 @@ namespace cp {
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		allocInfo.commandPool = mCmdPool;
-		allocInfo.commandBufferCount = mCmdBuffers.size();
+		allocInfo.commandBufferCount = (uint)mCmdBuffers.size();
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 
 		VkResult allocResult = vkAllocateCommandBuffers(mDevice.vkDevice(), &allocInfo, mCmdBuffers.data());
@@ -79,7 +79,7 @@ namespace cp {
 			framebufferSpec.width = extent.width;
 			framebufferSpec.height = extent.height;
 			framebufferSpec.attachment = image.view;
-			framebufferSpec.renderPass = mRenderPass.get();
+			framebufferSpec.pRenderPass = mRenderPass.get();
 
 			mFramebuffers.push_back(std::make_unique<Framebuffer>(mDevice, framebufferSpec));
 		}
@@ -97,7 +97,7 @@ namespace cp {
 		mRenderFinishedSemaphores.resize(mConfig.framesInFlight);
 		mInFlightFences.resize(mConfig.framesInFlight);
 
-		for (int i = 0; i < mConfig.framesInFlight; i++) {
+		for (size_t i = 0; i < mConfig.framesInFlight; i++) {
 			VkResult res1 = vkCreateSemaphore(mDevice.vkDevice(), &semaphoreInfo, nullptr, &mImageAvailSemaphores[i]);
 			VkResult res2 = vkCreateSemaphore(mDevice.vkDevice(), &semaphoreInfo, nullptr, &mRenderFinishedSemaphores[i]);
 			VkResult res3 = vkCreateFence(mDevice.vkDevice(), &fenceInfo, nullptr, &mInFlightFences[i]);
@@ -236,7 +236,7 @@ namespace cp {
 		VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(mCmdBuffers[mCurrentFrame], 0, 1, vertexBuffers, offsets);
 		vkCmdBindIndexBuffer(mCmdBuffers[mCurrentFrame], ib.vkHandle(), 0, VK_INDEX_TYPE_UINT16);
-		vkCmdDrawIndexed(mCmdBuffers[mCurrentFrame], ib.indexCount(), 1, 0, 0, 0);
+		vkCmdDrawIndexed(mCmdBuffers[mCurrentFrame], (uint)ib.indexCount(), 1, 0, 0, 0);
 
 		vkCmdEndRenderPass(mCmdBuffers[mCurrentFrame]);
 

@@ -35,10 +35,10 @@ namespace cp {
 		VkDeviceCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 		createInfo.pQueueCreateInfos = queueCreateInfos.data();
-		createInfo.queueCreateInfoCount = queueCreateInfos.size();
+		createInfo.queueCreateInfoCount = (uint)queueCreateInfos.size();
 		createInfo.pEnabledFeatures = &features;
 
-		createInfo.enabledExtensionCount = mDeviceExtensions.size();
+		createInfo.enabledExtensionCount = (uint)mDeviceExtensions.size();
 		createInfo.ppEnabledExtensionNames = mDeviceExtensions.data();
 		createInfo.enabledLayerCount = 0;
 
@@ -53,15 +53,15 @@ namespace cp {
 		CP_DEBUG_LOG("device destroyed");
 	}
 
-	void Device::wait() {
+	void Device::wait() const {
 		vkDeviceWaitIdle(mDevice);
 	}
 
-	uint Device::findMemoryType(uint typeFilterBits, VkMemoryPropertyFlags propertyFlags) {
+	uint Device::findMemoryType(uint typeFilterBits, VkMemoryPropertyFlags propertyFlags) const {
 		VkPhysicalDeviceMemoryProperties props;
 		vkGetPhysicalDeviceMemoryProperties(physicalDevice_, &props);
 		
-		for (int i = 0; i < props.memoryTypeCount; i++) {
+		for (uint i = 0; i < props.memoryTypeCount; i++) {
 			if (typeFilterBits & (1 << i) && (props.memoryTypes[i].propertyFlags & propertyFlags) == propertyFlags) {
 				return i;
 			}
@@ -97,7 +97,7 @@ namespace cp {
 
 		std::unordered_set<std::string> extensionsReq(mDeviceExtensions.begin(), mDeviceExtensions.end());
 
-		CP_DEBUG_LOG("\DEVICE EXTENSIONS");
+		CP_DEBUG_LOG("DEVICE EXTENSIONS");
 		for (const auto& extension : extensionsAvail) {
 			CP_DEBUG_LOG("%s", extension.extensionName);
 			extensionsReq.erase(extension.extensionName);

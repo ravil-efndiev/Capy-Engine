@@ -35,7 +35,7 @@ namespace cp {
 		int width, height;
 		glfwGetFramebufferSize(mWindow.glfwHandle(), &width, &height);
 
-		VkExtent2D realExtent = { width, height };
+		VkExtent2D realExtent = { (uint)width, (uint)height };
 		realExtent.width = std::clamp(realExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
 		realExtent.height = std::clamp(realExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
 		return realExtent;
@@ -43,7 +43,7 @@ namespace cp {
 
 	std::vector<Swapchain::Image> Swapchain::images() const {
 		std::vector<Image> images;
-		for (int i = 0; i < mImages.size(); i++) {
+		for (size_t i = 0; i < mImages.size(); i++) {
 			images.push_back({ mImages[i], mImageViews[i] });
 		}
 		return images;
@@ -110,7 +110,7 @@ namespace cp {
 
 	void Swapchain::createImageViews() {
 		mImageViews.resize(mImages.size());
-		for (int i = 0; i < mImageViews.size(); i++) {
+		for (size_t i = 0; i < mImageViews.size(); i++) {
 			VkImageViewCreateInfo createInfo{};
 			createInfo.image = mImages[i];
 			createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;

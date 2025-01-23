@@ -2,8 +2,11 @@
 #include <Application.h>
 
 namespace cp {
-	Shader::Shader(Device& device, const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
-		: mDevice(device) {
+	Shader::Shader(
+		Device& device,
+		const std::filesystem::path& vertexShaderPath,
+		const std::filesystem::path& fragmentShaderPath
+	) : mDevice(device) {
 
 		mVshData = readFileBin(vertexShaderPath);
 		mFshData = readFileBin(fragmentShaderPath);
@@ -15,6 +18,7 @@ namespace cp {
 	Shader::~Shader() {
 		vkDestroyShaderModule(mDevice.vkDevice(), vertexShaderModule, nullptr);
 		vkDestroyShaderModule(mDevice.vkDevice(), fragmentShaderModule, nullptr);
+		CP_DEBUG_LOG("shader modules destroyed");
 	}
 
 	VkShaderModule Shader::createShaderModule(const std::vector<char>& data) {

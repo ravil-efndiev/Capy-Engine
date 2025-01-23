@@ -7,7 +7,7 @@ namespace cp {
 		uint width;
 		uint height;
 		VkImageView attachment;
-		RenderPass* renderPass;
+		RenderPass* pRenderPass;
 	};
 
 	class Framebuffer {

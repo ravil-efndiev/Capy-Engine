@@ -21,23 +21,30 @@ namespace cp {
 	}
 
 	void Application::start() {
-		mContext = std::make_unique<VulkanContext>();
+		ApplicationConfiguration appConfig{};
+		appConfig.applicationName = "Ligma app";
+		mContext = std::make_unique<VulkanContext>(appConfig);
 
-		WindowSpecification winSpec{ mContext->instance(), 1200, 920, "vk project" };
+		WindowSpecification winSpec{};
+		winSpec.instance = mContext->instance();
+		winSpec.title = "Ligma app";
+		winSpec.width = 1200;
+		winSpec.height = 800;
 		mWindow = std::make_unique<Window>(mEvtHandler, winSpec);
 		mDevice = std::make_unique<Device>(mContext->instance(), mWindow->surface());
 		mSwapchain = std::make_unique<Swapchain>(*mDevice, *mWindow);
 
 		ResourceManager::init(*mDevice);
 
-		Shader shader(*mDevice, "assets/shadersbin/vert.spv", "assets/shadersbin/frag.spv");
+		mRenderer = std::make_unique<Renderer>(*mDevice, *mSwapchain, mEvtHandler);
+
+		Shader shader(*mDevice, gConstants.spirvDir / "vert.spv", gConstants.spirvDir / "frag.spv");
 
 		PipelineConfiguration pipelineConfig{};
 		pipelineConfig.culling = VK_CULL_MODE_BACK_BIT;
 		pipelineConfig.pShader = &shader;
 		//rendererConfig.pipelineConfig.polygonMode = VK_POLYGON_MODE_LINE;
-
-		mRenderer = std::make_unique<Renderer>(*mDevice, *mSwapchain, mEvtHandler);
+		
 		PipelineHandle pipeline = mRenderer->addPipelineConfiguration(pipelineConfig);
 		mRenderer->usePipeline(pipeline);
 

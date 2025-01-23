@@ -17,7 +17,7 @@ namespace cp {
 		createInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		createInfo.attachmentCount = 1;
 		createInfo.pAttachments = &mSpec.attachment;
-		createInfo.renderPass = mSpec.renderPass->vkHandle();
+		createInfo.renderPass = mSpec.pRenderPass->vkHandle();
 		createInfo.width = mSpec.width;
 		createInfo.height = mSpec.height;
 		createInfo.layers = 1;
