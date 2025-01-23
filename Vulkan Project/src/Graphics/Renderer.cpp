@@ -32,13 +32,17 @@ namespace cp {
 		CP_DEBUG_LOG("sync objects destroyed");
 	}
 
+	PipelineHandle Renderer::addPipelineConfiguration(const PipelineConfiguration& config) {
+		mPipelines.push_back(std::make_unique<Pipeline>(mDevice, mSwapchain, config));
+		return { mPipelines.size() - 1; }
+	}
+
+	void Renderer::usePipeline(PipelineHandle handle) {
+		CP_ASSERT(handle.id < mPipelines.size(), "invalid pipeline handle");
+		mCurrentPipeline = handle;
+	}
+
 	void Renderer::init() {
-		mPipeline = std::make_unique<Pipeline>(mDevice, mSwapchain, mConfig.pipelineConfig);
-
-		Shader shader(mDevice, "assets/shadersbin/vert.spv", "assets/shadersbin/frag.spv");
-		mPipeline->setShaderStages(shader);
-		mPipeline->create();
-
 		mRenderPass = std::make_unique<RenderPass>(mDevice, mSwapchain);
 
 		createFramebuffers();
@@ -104,7 +108,7 @@ namespace cp {
 
 	void Renderer::submitMesh(const Mesh<PositionColorVertex>& mesh) {
 		CP_ASSERT(
-			mPipeline->configuration().vertexType == PipelineConfiguration::PositionColorVertex,
+			mPipelines[mCurrentPipeline.id]->configuration().vertexType == PipelineConfiguration::PositionColorVertex,
 			"cannot submit mesh with vertex type PositionColorVertex with different pipeline configuration"
 		);
 		draw(mesh.vertexBuffer(), mesh.indexBuffer());
@@ -112,7 +116,7 @@ namespace cp {
 
 	void Renderer::submitMesh(const Mesh<SpriteVertex>& mesh) {
 		CP_ASSERT(
-			mPipeline->configuration().vertexType == PipelineConfiguration::TexCoordVertex,
+			mPipelines[mCurrentPipeline.id]->configuration().vertexType == PipelineConfiguration::TexCoordVertex,
 			"cannot submit mesh with vertex type SpriteVertex with different pipeline configuration"
 		);
 		draw(mesh.vertexBuffer(), mesh.indexBuffer());
@@ -123,8 +127,7 @@ namespace cp {
 			return;
 		}
 
-		vkWaitForFences(
-			mDevice.vkDevice(), 1, &mInFlightFences[mCurrentFrame], VK_TRUE, std::numeric_limits<uint64>::max());
+		vkWaitForFences(mDevice.vkDevice(), 1, &mInFlightFences[mCurrentFrame], VK_TRUE, std::numeric_limits<uint64>::max());
 
 		uint imageIdx = 0;
 		VkResult nextImgResult = vkAcquireNextImageKHR(
@@ -213,7 +216,7 @@ namespace cp {
 
 		vkCmdBeginRenderPass(mCmdBuffers[mCurrentFrame], &passBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-		vkCmdBindPipeline(mCmdBuffers[mCurrentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline->vkHandle());
+		vkCmdBindPipeline(mCmdBuffers[mCurrentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelines[mCurrentPipeline.id]->vkHandle());
 
 		VkViewport viewport{};
 		viewport.x = 0.0f;

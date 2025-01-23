@@ -30,11 +30,16 @@ namespace cp {
 
 		ResourceManager::init(*mDevice);
 
-		RendererConfiguration rendererConfig{};
-		rendererConfig.pipelineConfig.culling = VK_CULL_MODE_BACK_BIT;
+		Shader shader(*mDevice, "assets/shadersbin/vert.spv", "assets/shadersbin/frag.spv");
+
+		PipelineConfiguration pipelineConfig{};
+		pipelineConfig.culling = VK_CULL_MODE_BACK_BIT;
+		pipelineConfig.pShader = &shader;
 		//rendererConfig.pipelineConfig.polygonMode = VK_POLYGON_MODE_LINE;
 
-		mRenderer = std::make_unique<Renderer>(*mDevice, *mSwapchain, mEvtHandler, rendererConfig);
+		mRenderer = std::make_unique<Renderer>(*mDevice, *mSwapchain, mEvtHandler);
+		PipelineHandle pipeline = mRenderer->addPipelineConfiguration(pipelineConfig);
+		mRenderer->usePipeline(pipeline);
 
 		std::vector<PositionColorVertex> vertices = {
 			{{-0.5f, -0.5f, 0.f}, {1.0f, 1.0f, 1.0f, 1.f}},

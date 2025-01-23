@@ -9,10 +9,12 @@
 #include "Mesh.h"
 
 namespace cp {
+	struct PipelineHandle {
+		uint id = -1; // will be more then size of a vector (uint32_t max)
+	};
+
 	struct RendererConfiguration {
 		uint framesInFlight = 2;
-
-		PipelineConfiguration pipelineConfig{};
 	};
 
 	class Renderer {
@@ -24,6 +26,9 @@ namespace cp {
 			const RendererConfiguration& config = {}
 		);
 		~Renderer();
+
+		PipelineHandle addPipelineConfiguration(const PipelineConfiguration& config);
+		void usePipeline(PipelineHandle handle);
 
 		void submitMesh(const Mesh<PositionColorVertex>& mesh);
 		void submitMesh(const Mesh<SpriteVertex>& mesh);
@@ -42,11 +47,15 @@ namespace cp {
 
 	private:
 		RendererConfiguration mConfig;
-		std::unique_ptr<Pipeline> mPipeline;
+		std::vector<std::unique_ptr<Pipeline>> mPipelines;
+		PipelineHandle mCurrentPipeline{};
+
 		std::unique_ptr<RenderPass> mRenderPass;
 		std::vector<std::unique_ptr<Framebuffer>> mFramebuffers;
+		
 		Device& mDevice;
 		Swapchain& mSwapchain;
+		
 		VkCommandPool mCmdPool;
 		std::vector<VkCommandBuffer> mCmdBuffers;
 		std::vector<VkSemaphore> mImageAvailSemaphores;

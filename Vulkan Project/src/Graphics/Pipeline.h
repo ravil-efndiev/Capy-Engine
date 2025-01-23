@@ -15,6 +15,8 @@ namespace cp {
 		VertexType vertexType = PositionColorVertex;
 		VkCullModeFlags culling = VK_CULL_MODE_NONE;
 		VkPolygonMode polygonMode = VK_POLYGON_MODE_FILL;
+
+		Shader* pShader;
 	};
 
 	class Pipeline {
@@ -22,13 +24,12 @@ namespace cp {
 		Pipeline(Device& device, Swapchain& swapchain, const PipelineConfiguration& config = {});
 		~Pipeline();
 
-		void setShaderStages(const Shader& shaderModules);
-		void create();
-
 		VkPipeline vkHandle() const { return mPipeline; }
 		PipelineConfiguration configuration() const { return mConfig; }
 
 	private:
+		void create();
+		void setShaderStages(const Shader& shaderModules);
 		void setFixedState();
 
 	private:

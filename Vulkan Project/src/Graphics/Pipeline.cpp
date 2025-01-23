@@ -5,7 +5,10 @@ namespace cp {
 	Pipeline::Pipeline(Device& device, Swapchain& swapchain, const PipelineConfiguration& config)
 		: mDevice(device), mSwapchain(swapchain), mConfig(config) {
 
+		CP_ASSERT(mConfig.pShader != nullptr, "cannot create pipeline with null shader, set pShader in PipelineConfiguration");
+		setShaderStages(*mConfig.pShader);
 		setFixedState();
+		create();
 	}
 
 	Pipeline::~Pipeline() {
