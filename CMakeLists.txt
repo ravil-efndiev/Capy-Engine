@@ -1,16 +1,40 @@
-﻿# CMakeList.txt : Top-level CMake project file, do global configuration
-# and include sub-projects here.
-#
-cmake_minimum_required (VERSION 3.8)
+﻿set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Enable Hot Reload for MSVC compilers if supported.
-if (POLICY CMP0141)
-  cmake_policy(SET CMP0141 NEW)
-  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
+set(HOME $ENV{USERPROFILE})
+
+if(WIN32)
+    set(CMAKE_TOOLCHAIN_FILE ${HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "")
+else()  
+    set(CMAKE_TOOLCHAIN_FILE ~/tools/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "") 
+    set(glm_DIR ~/tools/vcpkg/installed/x64-linux/share/glm/)
+    set(glfw3_DIR ~/tools/vcpkg/installed/x64-linux/share/glfw3/)
 endif()
 
-project (vk)
+file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.h")
+source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SOURCES})
 
-# Include sub-projects.
-add_subdirectory ("Vulkan Project")
+add_executable(vk ${SOURCES})
 
+target_include_directories(vk PUBLIC
+    src/
+)
+
+find_package(glfw3 CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
+find_package(Vulkan REQUIRED)
+
+target_link_libraries(vk PRIVATE 
+    glfw 
+    glm::glm-header-only 
+    Vulkan::Vulkan
+)
+
+set(ASSET_DIR "${CMAKE_SOURCE_DIR}/assets")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
+add_custom_command(
+    TARGET vk POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${ASSET_DIR}"
+    "${EXECUTABLE_OUTPUT_PATH}/assets"
+)

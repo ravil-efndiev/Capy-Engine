@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\source\repos\Vulkan Project\CMakeFiles\76925ddbc8ae1bce652343c5de928602\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{BE2EAE46-3C85-331E-8A92-D486179767D4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
