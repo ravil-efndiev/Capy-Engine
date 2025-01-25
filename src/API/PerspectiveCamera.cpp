@@ -12,7 +12,9 @@ namespace cp {
 	}
 
 	glm::mat4 PerspectiveCamera::viewMatrix() const {
-		return glm::lookAt(mPosition, mPosition + mForward, mUp);
+		glm::vec3 invYPos = mPosition;
+		invYPos.y = -invYPos.y;
+		return glm::lookAt(invYPos, invYPos + mForward, mUp);
 	}
 
 	void PerspectiveCamera::rotate(float x, float y, float z) {

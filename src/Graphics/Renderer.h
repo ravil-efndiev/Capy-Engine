@@ -8,6 +8,7 @@
 #include "Buffers.h"
 #include "Mesh.h"
 #include "Uniforms.h"
+#include <API/Transform.h>
 
 namespace cp {
 	struct PipelineHandle {
@@ -34,11 +35,13 @@ namespace cp {
 		);
 		void usePipeline(PipelineHandle handle);
 
-		void submitMesh(const Mesh<PositionColorVertex>& mesh);
-		void submitMesh(const Mesh<SpriteVertex>& mesh);
+		void begin();
+		void end();
+		void submitMesh(const Mesh<PositionColorVertex>& mesh, const Transform& tf);
+		void submitMesh(const Mesh<SpriteVertex>& mesh, const Transform& tf);
 
 		void setViewportSize(int width, int height);
-		void setMatrixUBO(const MatrixUBO& ubo);
+		void setProjView(const glm::mat4& projection, const glm::mat4& view);
 
 		glm::vec2 viewportSize() const { return { mViewportWidth, mViewportHeight }; }
 
@@ -48,9 +51,8 @@ namespace cp {
 		void createSyncObjects();
 		void createDescriptorSets();
 
-		void draw(VertexBuffer& vb, IndexBuffer& ib);
-
-		void recordCommandBuffer(uint imageIdx, VertexBuffer& vb, IndexBuffer& ib);
+		void bindAndDrawBuffers(VertexBuffer& vb, IndexBuffer& ib);
+		void updateModelMatrix(const glm::mat4& model);
 		void recreateSwapchain();
 
 	private:
@@ -73,9 +75,10 @@ namespace cp {
 		std::vector<VkFence> mInFlightFences;
 
 		std::vector<VkDescriptorSet> mDescriptorSets;
-		std::vector<std::unique_ptr<UniformBuffer<MatrixUBO>>> mMatrixUniformBuffers;
+		std::vector<std::unique_ptr<UniformBuffer<ProjViewUBO>>> mMatrixUniformBuffers;
 
 		int mViewportWidth, mViewportHeight;
 		uint mCurrentFrame = 0;
+		uint mImageIdx = 0;
 	};
 }

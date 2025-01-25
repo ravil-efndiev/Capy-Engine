@@ -6,6 +6,7 @@
 #include "Graphics/Renderer.h"
 #include "Events/EventHandler.h"
 #include "API/PerspectiveCamera.h"
+#include "API/Transform.h"
 
 namespace cp {
 	class Application {
@@ -32,5 +33,7 @@ namespace cp {
 		std::unique_ptr<Mesh<PositionColorVertex>> mMesh;
 		EventHandler mEvtHandler;
 		PerspectiveCamera mCamera{glm::vec3(0.f, 0.f, 2.f), 70.f};
+		Transform mMeshTf;
+		Transform mMeshTf2;
 	};
 }

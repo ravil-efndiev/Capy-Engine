@@ -124,6 +124,11 @@ namespace cp {
 			descSetBindings[i].stageFlags = mConfig.descriptorSetBindings[i].shaderStage;
 		}
 
+		VkPushConstantRange pcRange{};
+		pcRange.offset = 0;
+		pcRange.size = sizeof(glm::mat4);
+		pcRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
 		VkDescriptorSetLayoutCreateInfo descSetLayoutInfo{};
 		descSetLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 		descSetLayoutInfo.bindingCount = (uint)descSetBindings.size();
@@ -136,6 +141,8 @@ namespace cp {
 		layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		layoutInfo.setLayoutCount = 1;
 		layoutInfo.pSetLayouts = &mDescSetLayout;
+		layoutInfo.pushConstantRangeCount = 1;
+		layoutInfo.pPushConstantRanges = &pcRange;
 
 		VkResult layoutResult = vkCreatePipelineLayout(mDevice.vkDevice(), &layoutInfo, nullptr, &mPipelineLayout);
 		checkVkResult(layoutResult, "couldnt create Pipeline Layout");

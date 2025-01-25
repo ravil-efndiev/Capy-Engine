@@ -40,8 +40,8 @@ namespace cp {
 		Shader shader(*mDevice, gConstants.spirvDir / "vert.spv", gConstants.spirvDir / "frag.spv");
 
 		PipelineConfiguration pipelineConfig{};
-		pipelineConfig.culling = VK_CULL_MODE_BACK_BIT;
 		pipelineConfig.pShader = &shader;
+		//pipelineConfig.culling = VK_CULL_MODE_BACK_BIT;
 		//rendererConfig.pipelineConfig.polygonMode = VK_POLYGON_MODE_LINE;
 		
 		PipelineHandle pipeline = mRenderer->addPipelineConfiguration(pipelineConfig, true);
@@ -59,6 +59,11 @@ namespace cp {
 		};
 
 		mMesh = std::make_unique<Mesh<PositionColorVertex>>(*mDevice, vertices, indices);
+		mMeshTf.position = { 0.f, 1.f, 0.f };
+		mMeshTf.scale = { 3.f, 1.f, 1.f };
+		mMeshTf.useImplicitDegrees = true;
+
+		mMeshTf2.position.x = -1.f;
 	}
 
 	void Application::update() {
@@ -70,8 +75,10 @@ namespace cp {
 
 			Time::update();
 			mWindow->pollEvents();
+			
+			mMeshTf.rotation.y += 10.f * Time::dt();
 
-			float camSpeed = 20.f;
+			float camSpeed = 10.f;
 			if (Input::isKeyPressed(KeyW)) {
 				mCamera.move(glm::vec3(0.f, 0.f, -1.f) * camSpeed * Time::dt());
 			}
@@ -84,11 +91,20 @@ namespace cp {
 			if (Input::isKeyPressed(KeyD)) {
 				mCamera.move(glm::vec3(1.f, 0.f, 0.f) * camSpeed * Time::dt());
 			}
+			if (Input::isKeyPressed(KeySpace)) {
+				mCamera.move(glm::vec3(0.f, 1.f, 0.f) * camSpeed * Time::dt());
+			}
+			if (Input::isKeyPressed(KeyLeftShift)) {
+				mCamera.move(glm::vec3(0.f, -1.f, 0.f) * camSpeed * Time::dt());
+			}
 
 			glm::vec2 viewportSize = mRenderer->viewportSize();
 			float aspect = viewportSize.x / viewportSize.y;
-			mRenderer->setMatrixUBO({ mCamera.projectionMatrix(aspect), mCamera.viewMatrix(), glm::mat4(1.f) });
-			mRenderer->submitMesh(*mMesh);
+			mRenderer->setProjView(mCamera.projectionMatrix(aspect), mCamera.viewMatrix());
+			mRenderer->begin();
+			mRenderer->submitMesh(*mMesh, mMeshTf);
+			mRenderer->submitMesh(*mMesh, mMeshTf2);
+			mRenderer->end();
 
 			//CP_DEBUG_LOG("%f", 1.f / Time::dt());
 		}

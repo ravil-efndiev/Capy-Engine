@@ -93,5 +93,5 @@ namespace cp {
 		memcpy(mMappedMemory, &ubo, mSize);
 	}
 
-	template class UniformBuffer<MatrixUBO>;
+	template class UniformBuffer<ProjViewUBO>;
 }

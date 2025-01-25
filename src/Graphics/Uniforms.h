@@ -2,9 +2,8 @@
 #include <include.h>
 
 namespace cp {
-	struct MatrixUBO {
-		glm::mat4 proj;
-		glm::mat4 view;
-		glm::mat4 model;
+	struct ProjViewUBO {
+		glm::mat4 proj{1.f};
+		glm::mat4 view{1.f};
 	};
 }
