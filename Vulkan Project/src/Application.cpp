@@ -1,13 +1,11 @@
 #include "Application.h"
 #include "Graphics/Shader.h"
 #include "API/Time.h"
+#include "API/Input.h"
 
 namespace cp {
 	Application::Application() {
 		enableVirtualTerminalProcessing();
-	}
-
-	Application::~Application() {
 	}
 
 	void Application::run() {
@@ -21,6 +19,7 @@ namespace cp {
 	}
 
 	void Application::start() {
+		Input::init(mEvtHandler);
 		ApplicationConfiguration appConfig{};
 		appConfig.applicationName = "Ligma app";
 		mContext = std::make_unique<VulkanContext>(appConfig);
@@ -45,7 +44,7 @@ namespace cp {
 		pipelineConfig.pShader = &shader;
 		//rendererConfig.pipelineConfig.polygonMode = VK_POLYGON_MODE_LINE;
 		
-		PipelineHandle pipeline = mRenderer->addPipelineConfiguration(pipelineConfig);
+		PipelineHandle pipeline = mRenderer->addPipelineConfiguration(pipelineConfig, true);
 		mRenderer->usePipeline(pipeline);
 
 		std::vector<PositionColorVertex> vertices = {
@@ -71,7 +70,24 @@ namespace cp {
 
 			Time::update();
 			mWindow->pollEvents();
-			
+
+			float camSpeed = 20.f;
+			if (Input::isKeyPressed(KeyW)) {
+				mCamera.move(glm::vec3(0.f, 0.f, -1.f) * camSpeed * Time::dt());
+			}
+			if (Input::isKeyPressed(KeyS)) {
+				mCamera.move(glm::vec3(0.f, 0.f, 1.f) * camSpeed * Time::dt());
+			}
+			if (Input::isKeyPressed(KeyA)) {
+				mCamera.move(glm::vec3(-1.f, 0.f, 0.f) * camSpeed * Time::dt());
+			}
+			if (Input::isKeyPressed(KeyD)) {
+				mCamera.move(glm::vec3(1.f, 0.f, 0.f) * camSpeed * Time::dt());
+			}
+
+			glm::vec2 viewportSize = mRenderer->viewportSize();
+			float aspect = viewportSize.x / viewportSize.y;
+			mRenderer->setMatrixUBO({ mCamera.projectionMatrix(aspect), mCamera.viewMatrix(), glm::mat4(1.f) });
 			mRenderer->submitMesh(*mMesh);
 
 			//CP_DEBUG_LOG("%f", 1.f / Time::dt());

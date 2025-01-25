@@ -49,6 +49,19 @@ namespace cp {
 			window->onEvent(&event);
 		});
 
+		glfwSetKeyCallback(mWindow, [](GLFWwindow* glfwWin, int key, int scancode, int action, int modes) {
+			Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWin));
+
+			if (action == GLFW_PRESS) {
+				KeyPressEvent event(key);
+				window->onEvent(&event);
+			}
+			else if (action == GLFW_RELEASE) {
+				KeyReleaseEvent event(key);
+				window->onEvent(&event);
+			}
+		});
+
 		glfwSetWindowIconifyCallback(mWindow, [](GLFWwindow* glfwWin, int iconified) {
 			Window* window = static_cast<Window*>(glfwGetWindowUserPointer(glfwWin));
 

@@ -2,7 +2,10 @@
 
 namespace cp {
 	PerspectiveCamera::PerspectiveCamera(const glm::vec3& position, float fov)
-		: mPosition(position), mFov(fov) {}
+		: mPosition(position), mFov(fov) {
+	
+		applyRotation();
+	}
 
 	glm::mat4 PerspectiveCamera::projectionMatrix(float viewportAspectRatio) const {
 		return glm::perspective(mFov, viewportAspectRatio, 0.1f, 100.f);
@@ -30,6 +33,10 @@ namespace cp {
 
 	void PerspectiveCamera::setPosition(const glm::vec3& position) {
 		mPosition = position;
+	}
+
+	void PerspectiveCamera::move(const glm::vec3& moveVec) {
+		mPosition += moveVec;
 	}
 
 	void PerspectiveCamera::applyRotation() {

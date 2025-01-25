@@ -13,6 +13,7 @@ namespace cp {
 	Pipeline::~Pipeline() {
 		vkDestroyPipeline(mDevice.vkDevice(), mPipeline, nullptr);
 		vkDestroyPipelineLayout(mDevice.vkDevice(), mPipelineLayout, nullptr);
+		vkDestroyDescriptorSetLayout(mDevice.vkDevice(), mDescSetLayout, nullptr);
 		CP_DEBUG_LOG("pipeline and layout destroyed");
 	}
 
@@ -115,8 +116,26 @@ namespace cp {
 		colorBlendInfo.attachmentCount = 1;
 		colorBlendInfo.pAttachments = &blendAttachment;
 
+		std::vector<VkDescriptorSetLayoutBinding> descSetBindings(mConfig.descriptorSetBindings.size());
+		for (size_t i = 0; i < descSetBindings.size(); i++) {
+			descSetBindings[i].binding = (uint)i;
+			descSetBindings[i].descriptorCount = 1;
+			descSetBindings[i].descriptorType = mConfig.descriptorSetBindings[i].descriptorType;
+			descSetBindings[i].stageFlags = mConfig.descriptorSetBindings[i].shaderStage;
+		}
+
+		VkDescriptorSetLayoutCreateInfo descSetLayoutInfo{};
+		descSetLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		descSetLayoutInfo.bindingCount = (uint)descSetBindings.size();
+		descSetLayoutInfo.pBindings = descSetBindings.data();
+
+		VkResult descLayoutResult = vkCreateDescriptorSetLayout(mDevice.vkDevice(), &descSetLayoutInfo, nullptr, &mDescSetLayout);
+		checkVkResult(descLayoutResult, "failed to create descriptor set layout");
+
 		VkPipelineLayoutCreateInfo layoutInfo{};
 		layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		layoutInfo.setLayoutCount = 1;
+		layoutInfo.pSetLayouts = &mDescSetLayout;
 
 		VkResult layoutResult = vkCreatePipelineLayout(mDevice.vkDevice(), &layoutInfo, nullptr, &mPipelineLayout);
 		checkVkResult(layoutResult, "couldnt create Pipeline Layout");

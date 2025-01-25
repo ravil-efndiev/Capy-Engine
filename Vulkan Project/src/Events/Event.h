@@ -27,4 +27,20 @@ namespace cp {
 		int width;
 		int height;
 	};
+
+	struct KeyPressEvent : public Event {
+		KeyPressEvent(int keycode) : keycode(keycode) {}
+
+		EventType getType() const override { return EventType::keyPress; }
+
+		int keycode;
+	};
+
+	struct KeyReleaseEvent : public Event {
+		KeyReleaseEvent(int keycode) : keycode(keycode) {}
+
+		EventType getType() const override { return EventType::keyRelease; }
+
+		int keycode;
+	};
 }

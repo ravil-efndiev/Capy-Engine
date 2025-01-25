@@ -15,14 +15,14 @@ namespace cp {
 		
 		ResourceManager::fillBuffer(mDevice, stagingBufferMemory, size, data);
 
-		Buffer vertexBuffer = ResourceManager::createBuffer(
+		auto [buffer, memory] = ResourceManager::createBuffer(
 			mDevice, size,
 			VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 		);
 
-		mVertexBuffer = vertexBuffer.buffer;
-		mBufferMemory = vertexBuffer.memory;
+		mVertexBuffer = buffer;
+		mBufferMemory = memory;
 
 		ResourceManager::copyBuffer(mDevice, stagingBuffer, mVertexBuffer, size);
 
@@ -50,18 +50,48 @@ namespace cp {
 
 		ResourceManager::fillBuffer(mDevice, stagingBufferMemory, size, data);
 
-		Buffer indexBuffer = ResourceManager::createBuffer(
+		auto [buffer, memory] = ResourceManager::createBuffer(
 			mDevice, size,
 			VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 		);
 
-		mIndexBuffer = indexBuffer.buffer;
-		mBufferMemory = indexBuffer.memory;
+		mIndexBuffer = buffer;
+		mBufferMemory = memory;
 
 		ResourceManager::copyBuffer(mDevice, stagingBuffer, mIndexBuffer, size);
 
 		vkDestroyBuffer(mDevice.vkDevice(), stagingBuffer, nullptr);
 		vkFreeMemory(mDevice.vkDevice(), stagingBufferMemory, nullptr);
 	}
+
+	template<class UboT>
+	UniformBuffer<UboT>::UniformBuffer(Device& device)
+		: mDevice(device) {
+
+		auto [buffer, memory] = ResourceManager::createBuffer(
+			mDevice, mSize, 
+			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+		);
+
+		mUniformBuffer = buffer;
+		mBufferMemory = memory;
+
+		vkMapMemory(mDevice.vkDevice(), mBufferMemory, 0, mSize, 0, &mMappedMemory);
+	}
+
+	template<class UboT>
+	UniformBuffer<UboT>::~UniformBuffer() {
+		vkDestroyBuffer(mDevice.vkDevice(), mUniformBuffer, nullptr);
+		vkFreeMemory(mDevice.vkDevice(), mBufferMemory, nullptr);
+		CP_DEBUG_LOG("uniform buffer destroyed");
+	}
+
+	template<class UboT>
+	void UniformBuffer<UboT>::update(const UboT& ubo) {
+		memcpy(mMappedMemory, &ubo, mSize);
+	}
+
+	template class UniformBuffer<MatrixUBO>;
 }

@@ -9,10 +9,12 @@ namespace cp {
 		glm::mat4 projectionMatrix(float viewportAspectRatio) const;
 		glm::mat4 viewMatrix() const;
 		glm::vec3 vectorRotation() const { return mVecRotation; }
+		glm::vec3 position() const { return mPosition; }
 
 		void rotate(float x, float y, float z);
 		void rotate(const glm::vec3& rotation);
 		void setPosition(const glm::vec3& position);
+		void move(const glm::vec3& moveVec);
 
 	private:
 		void applyRotation();
@@ -24,7 +26,7 @@ namespace cp {
 
 		float mFov = 0;
 		glm::vec3 mPosition{};
-		glm::mat4 mRotation{};
+		glm::mat4 mRotation{1.f};
 		glm::vec3 mVecRotation{};
 	};
 }

@@ -22,6 +22,7 @@ namespace cp {
 
 	Renderer::~Renderer() {
 		vkDestroyCommandPool(mDevice.vkDevice(), mCmdPool, nullptr);
+		vkDestroyDescriptorPool(mDevice.vkDevice(), mDescriptorPool, nullptr);
 		CP_DEBUG_LOG("command pool destroyed");
 
 		for (size_t i = 0; i < mConfig.framesInFlight; i++) {
@@ -32,7 +33,15 @@ namespace cp {
 		CP_DEBUG_LOG("sync objects destroyed");
 	}
 
-	PipelineHandle Renderer::addPipelineConfiguration(const PipelineConfiguration& config) {
+	PipelineHandle Renderer::addPipelineConfiguration(
+		PipelineConfiguration& config, 
+		bool useDefaultDescriptorBindings
+	) {
+		if (useDefaultDescriptorBindings) {
+			config.descriptorSetBindings = {
+				{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT } // Matrix uniform
+			};
+		}
 		mPipelines.push_back(std::make_unique<Pipeline>(mDevice, mSwapchain, config));
 		return { (uint)mPipelines.size() - 1 };
 	}
@@ -40,6 +49,10 @@ namespace cp {
 	void Renderer::usePipeline(PipelineHandle handle) {
 		CP_ASSERT(handle.id < mPipelines.size(), "invalid pipeline handle");
 		mCurrentPipeline = handle;
+
+		if (mCurrentPipeline.id == 0) {
+			createDescriptorSets();
+		}
 	}
 
 	void Renderer::init() {
@@ -67,6 +80,10 @@ namespace cp {
 
 		VkResult allocResult = vkAllocateCommandBuffers(mDevice.vkDevice(), &allocInfo, mCmdBuffers.data());
 		checkVkResult(allocResult, "failed to allocate command buffers");
+
+		for (uint i = 0; i < mConfig.framesInFlight; i++) {
+			mMatrixUniformBuffers.push_back(std::make_unique<UniformBuffer<MatrixUBO>>(mDevice));
+		}
 	}
 
 	void Renderer::createFramebuffers() {
@@ -97,12 +114,60 @@ namespace cp {
 		mRenderFinishedSemaphores.resize(mConfig.framesInFlight);
 		mInFlightFences.resize(mConfig.framesInFlight);
 
-		for (size_t i = 0; i < mConfig.framesInFlight; i++) {
+		for (uint i = 0; i < mConfig.framesInFlight; i++) {
 			VkResult res1 = vkCreateSemaphore(mDevice.vkDevice(), &semaphoreInfo, nullptr, &mImageAvailSemaphores[i]);
 			VkResult res2 = vkCreateSemaphore(mDevice.vkDevice(), &semaphoreInfo, nullptr, &mRenderFinishedSemaphores[i]);
 			VkResult res3 = vkCreateFence(mDevice.vkDevice(), &fenceInfo, nullptr, &mInFlightFences[i]);
 
 			checkVkResult({ res1, res2, res3 }, "failed to create fence or semaphore");
+		}
+	}
+
+	void Renderer::createDescriptorSets() {
+		VkDescriptorPoolSize poolSize{};
+		poolSize.descriptorCount = mConfig.framesInFlight;
+		poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+
+		VkDescriptorPoolCreateInfo poolInfo{};
+		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		poolInfo.poolSizeCount = 1;
+		poolInfo.pPoolSizes = &poolSize;
+		poolInfo.maxSets = mConfig.framesInFlight;
+
+		VkResult poolResult = vkCreateDescriptorPool(mDevice.vkDevice(), &poolInfo, nullptr, &mDescriptorPool);
+		checkVkResult(poolResult, "failed to create descriptor pool");
+
+		std::vector<VkDescriptorSetLayout> layouts(
+			mConfig.framesInFlight, 
+			mPipelines[mCurrentPipeline.id]->descriptorSetLayout()
+		);
+
+		VkDescriptorSetAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		allocInfo.descriptorPool = mDescriptorPool;
+		allocInfo.descriptorSetCount = mConfig.framesInFlight;
+		allocInfo.pSetLayouts = layouts.data();
+
+		mDescriptorSets.resize(mConfig.framesInFlight);
+		VkResult setResult = vkAllocateDescriptorSets(mDevice.vkDevice(), &allocInfo, mDescriptorSets.data());
+		checkVkResult(setResult, "failed to allocate descriptor sets");
+
+		for (uint i = 0; i < mConfig.framesInFlight; i++) {
+			VkDescriptorBufferInfo descBufferInfo{};
+			descBufferInfo.buffer = mMatrixUniformBuffers[i]->vkHandle();
+			descBufferInfo.offset = 0;
+			descBufferInfo.range = mMatrixUniformBuffers[i]->uboSize();
+
+			VkWriteDescriptorSet descWrite{};
+			descWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descWrite.dstSet = mDescriptorSets[i];
+			descWrite.dstBinding = 0;
+			descWrite.dstArrayElement = 0;
+			descWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			descWrite.descriptorCount = 1;
+			descWrite.pBufferInfo = &descBufferInfo;
+
+			vkUpdateDescriptorSets(mDevice.vkDevice(), 1, &descWrite, 0, nullptr);
 		}
 	}
 
@@ -196,6 +261,10 @@ namespace cp {
 		mViewportHeight = height;
 	}
 
+	void Renderer::setMatrixUBO(const MatrixUBO& ubo) {
+		mMatrixUniformBuffers[mCurrentFrame]->update(ubo);
+	}
+
 	void Renderer::recordCommandBuffer(uint imageIdx, VertexBuffer& vb, IndexBuffer& ib) {
 		VkCommandBufferBeginInfo bufferBeginInfo{};
 		bufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -236,6 +305,15 @@ namespace cp {
 		VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(mCmdBuffers[mCurrentFrame], 0, 1, vertexBuffers, offsets);
 		vkCmdBindIndexBuffer(mCmdBuffers[mCurrentFrame], ib.vkHandle(), 0, VK_INDEX_TYPE_UINT16);
+		vkCmdBindDescriptorSets(
+			mCmdBuffers[mCurrentFrame],
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			mPipelines[mCurrentPipeline.id]->layout(),
+			0, 1,
+			&mDescriptorSets[mCurrentFrame],
+			0, nullptr
+		);
+
 		vkCmdDrawIndexed(mCmdBuffers[mCurrentFrame], (uint)ib.indexCount(), 1, 0, 0, 0);
 
 		vkCmdEndRenderPass(mCmdBuffers[mCurrentFrame]);

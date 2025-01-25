@@ -18,7 +18,7 @@ add_executable(vk
     "src/Utils.cpp"
     "src/Utils.h"
  "src/Vulkan/VulkanContext.cpp"
-"src/Vulkan/VulkanContext.h" "src/Vulkan/Window.cpp" "src/Vulkan/Window.h" "src/Vulkan/Device.cpp" "src/Vulkan/Device.h" "src/Vulkan/Swapchain.h" "src/Vulkan/Swapchain.cpp" "src/Graphics/Shader.h" "src/Graphics/Shader.cpp" "src/Graphics/Pipeline.h" "src/Graphics/Pipeline.cpp" "src/Graphics/RenderPass.h" "src/Graphics/RenderPass.cpp" "src/Graphics/Framebuffer.h" "src/Graphics/Framebuffer.cpp" "src/Graphics/Renderer.h" "src/Graphics/Renderer.cpp" "src/Events/EventHandler.cpp" "src/Events/Event.h" "src/Graphics/Buffers.cpp"  "src/Graphics/Buffers.h" "src/Graphics/Vertex.h" "src/API/Time.h" "src/API/Time.cpp" "src/Vulkan/ResourceManager.h" "src/Vulkan/ResourceManager.cpp"  "src/Graphics/Mesh.cpp" "src/API/PerspectiveCamera.h" "src/API/PerspectiveCamera.cpp")
+"src/Vulkan/VulkanContext.h" "src/Vulkan/Window.cpp" "src/Vulkan/Window.h" "src/Vulkan/Device.cpp" "src/Vulkan/Device.h" "src/Vulkan/Swapchain.h" "src/Vulkan/Swapchain.cpp" "src/Graphics/Shader.h" "src/Graphics/Shader.cpp" "src/Graphics/Pipeline.h" "src/Graphics/Pipeline.cpp" "src/Graphics/RenderPass.h" "src/Graphics/RenderPass.cpp" "src/Graphics/Framebuffer.h" "src/Graphics/Framebuffer.cpp" "src/Graphics/Renderer.h" "src/Graphics/Renderer.cpp" "src/Events/EventHandler.cpp" "src/Events/Event.h" "src/Graphics/Buffers.cpp"  "src/Graphics/Buffers.h" "src/Graphics/Vertex.h" "src/API/Time.h" "src/API/Time.cpp" "src/Vulkan/ResourceManager.h" "src/Vulkan/ResourceManager.cpp"  "src/Graphics/Mesh.cpp" "src/API/PerspectiveCamera.h" "src/API/PerspectiveCamera.cpp" "src/Graphics/Uniforms.h" "src/API/Input.h" "src/API/Input.cpp" "src/Enums.h")
 
 target_include_directories(vk PUBLIC
     src/

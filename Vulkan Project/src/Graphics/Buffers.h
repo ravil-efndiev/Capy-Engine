@@ -1,6 +1,7 @@
 #pragma once
 #include <Vulkan/ResourceManager.h>
 #include "Vertex.h"
+#include "Uniforms.h"
 
 namespace cp {
 	class VertexBuffer {
@@ -43,5 +44,25 @@ namespace cp {
 		VkBuffer mIndexBuffer = VK_NULL_HANDLE;
 		VkDeviceMemory mBufferMemory = VK_NULL_HANDLE;
 		size_t mIndicesCount = 0;
+	};
+
+	template <class UboT>
+	class UniformBuffer {
+	public:
+		UniformBuffer(Device& device);
+		~UniformBuffer();
+
+		VkBuffer vkHandle() const { return mUniformBuffer; }
+		VkDeviceSize uboSize() const { return mSize; }
+
+		void update(const UboT& ubo);
+
+	private:
+		Device& mDevice;
+		const VkDeviceSize mSize = sizeof(UboT);
+
+		VkBuffer mUniformBuffer = VK_NULL_HANDLE;
+		VkDeviceMemory mBufferMemory = VK_NULL_HANDLE;
+		void* mMappedMemory = nullptr;
 	};
 }

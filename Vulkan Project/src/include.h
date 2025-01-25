@@ -43,6 +43,8 @@
 	#define CP_DEBUG_VULKAN(severity, message)
 #endif
 
+#include "Enums.h"
+
 namespace cp {
 	typedef uint32_t uint;
 	typedef uint16_t uint16;

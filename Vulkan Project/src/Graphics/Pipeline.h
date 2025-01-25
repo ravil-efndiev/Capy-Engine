@@ -17,6 +17,13 @@ namespace cp {
 		VkPolygonMode polygonMode = VK_POLYGON_MODE_FILL;
 
 		Shader* pShader;
+
+		struct DescriptorSetBinding {
+			VkDescriptorType descriptorType;
+			VkShaderStageFlags shaderStage;
+		};
+		
+		std::vector<DescriptorSetBinding> descriptorSetBindings;
 	};
 
 	class Pipeline {
@@ -26,6 +33,8 @@ namespace cp {
 
 		VkPipeline vkHandle() const { return mPipeline; }
 		PipelineConfiguration configuration() const { return mConfig; }
+		VkPipelineLayout layout() const { return mPipelineLayout; }
+		VkDescriptorSetLayout descriptorSetLayout() const { return mDescSetLayout; }
 
 	private:
 		void create();
@@ -38,6 +47,7 @@ namespace cp {
 		Swapchain& mSwapchain;
 		VkPipeline mPipeline = VK_NULL_HANDLE;
 		VkPipelineLayout mPipelineLayout = VK_NULL_HANDLE;
+		VkDescriptorSetLayout mDescSetLayout = VK_NULL_HANDLE;
 		RenderPass mRenderPass{ mDevice, mSwapchain };
 
 		VkPipelineShaderStageCreateInfo mVertexShaderStage{};

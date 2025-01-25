@@ -7,6 +7,7 @@
 #include "RenderPass.h"
 #include "Buffers.h"
 #include "Mesh.h"
+#include "Uniforms.h"
 
 namespace cp {
 	struct PipelineHandle {
@@ -27,18 +28,25 @@ namespace cp {
 		);
 		~Renderer();
 
-		PipelineHandle addPipelineConfiguration(const PipelineConfiguration& config);
+		PipelineHandle addPipelineConfiguration(
+			PipelineConfiguration& config, 
+			bool useDefaultDescriptorBindings = false
+		);
 		void usePipeline(PipelineHandle handle);
 
 		void submitMesh(const Mesh<PositionColorVertex>& mesh);
 		void submitMesh(const Mesh<SpriteVertex>& mesh);
 
 		void setViewportSize(int width, int height);
+		void setMatrixUBO(const MatrixUBO& ubo);
+
+		glm::vec2 viewportSize() const { return { mViewportWidth, mViewportHeight }; }
 
 	private:
 		void init();
 		void createFramebuffers();
 		void createSyncObjects();
+		void createDescriptorSets();
 
 		void draw(VertexBuffer& vb, IndexBuffer& ib);
 
@@ -57,10 +65,15 @@ namespace cp {
 		Swapchain& mSwapchain;
 		
 		VkCommandPool mCmdPool;
+		VkDescriptorPool mDescriptorPool;
+
 		std::vector<VkCommandBuffer> mCmdBuffers;
 		std::vector<VkSemaphore> mImageAvailSemaphores;
 		std::vector<VkSemaphore> mRenderFinishedSemaphores;
 		std::vector<VkFence> mInFlightFences;
+
+		std::vector<VkDescriptorSet> mDescriptorSets;
+		std::vector<std::unique_ptr<UniformBuffer<MatrixUBO>>> mMatrixUniformBuffers;
 
 		int mViewportWidth, mViewportHeight;
 		uint mCurrentFrame = 0;

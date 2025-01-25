@@ -5,12 +5,13 @@
 #include "Vulkan/Swapchain.h"
 #include "Graphics/Renderer.h"
 #include "Events/EventHandler.h"
+#include "API/PerspectiveCamera.h"
 
 namespace cp {
 	class Application {
 	public:
 		Application();
-		~Application();
+		virtual ~Application() = default;
 		void run();
 
 		VulkanContext& context() { return *mContext; }
@@ -30,5 +31,6 @@ namespace cp {
 		std::unique_ptr<Renderer> mRenderer;
 		std::unique_ptr<Mesh<PositionColorVertex>> mMesh;
 		EventHandler mEvtHandler;
+		PerspectiveCamera mCamera{glm::vec3(0.f, 0.f, 2.f), 70.f};
 	};
 }
