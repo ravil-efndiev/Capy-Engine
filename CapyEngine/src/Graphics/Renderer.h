@@ -29,10 +29,7 @@ namespace cp {
 		);
 		~Renderer();
 
-		PipelineHandle addPipelineConfiguration(
-			PipelineConfiguration& config, 
-			bool useDefaultDescriptorBindings = false
-		);
+		PipelineHandle addPipelineConfiguration(PipelineConfiguration& config);
 		void usePipeline(PipelineHandle handle);
 
 		void begin();
@@ -51,7 +48,7 @@ namespace cp {
 		void createSyncObjects();
 		void createDescriptorSets();
 
-		void bindAndDrawBuffers(VertexBuffer& vb, IndexBuffer& ib);
+		void bindAndDrawBuffers(const VertexBuffer& vb, const IndexBuffer& ib);
 		void updateModelMatrix(const glm::mat4& model);
 		void recreateSwapchain();
 
@@ -61,7 +58,7 @@ namespace cp {
 		PipelineHandle mCurrentPipeline{};
 
 		std::unique_ptr<RenderPass> mRenderPass;
-		std::vector<std::unique_ptr<Framebuffer>> mFramebuffers;
+		std::vector<Framebuffer> mFramebuffers;
 		
 		Device& mDevice;
 		Swapchain& mSwapchain;

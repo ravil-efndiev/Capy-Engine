@@ -8,7 +8,9 @@ namespace cp {
 	}
 
 	glm::mat4 PerspectiveCamera::projectionMatrix(float viewportAspectRatio) const {
-		return glm::perspective(mFov, viewportAspectRatio, 0.1f, 100.f);
+		return viewportAspectRatio > 0 
+			? glm::perspective(mFov, viewportAspectRatio, 0.1f, 100.f)
+			: glm::mat4(0.f);
 	}
 
 	glm::mat4 PerspectiveCamera::viewMatrix() const {

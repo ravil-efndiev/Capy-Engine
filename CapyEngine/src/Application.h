@@ -7,33 +7,40 @@
 #include "Events/EventHandler.h"
 #include "API/PerspectiveCamera.h"
 #include "API/Transform.h"
+#include "Graphics/Shader.h"
+#include "API/Time.h"
+#include "API/Input.h"
 
 namespace cp {
 	class Application {
 	public:
+		template <class AppT>
+		static Application& create() {
+			sInstance = std::make_unique<AppT>();
+			return *sInstance;
+		}
+		static Application& get();
+
 		Application();
 		virtual ~Application() = default;
 		void run();
 
+		virtual void start() = 0;
+		virtual void update() = 0;
+
 		VulkanContext& context() { return *mContext; }
 		Window& window() { return *mWindow; }
-		Device& device() { return *mDevice; }
 		Swapchain& swapchain() { return *mSwapchain; }
-
-	private:
-		void start();
-		void update();
+		Device& device() { return *mDevice; }
+		EventHandler& eventHandler() { return mEvtHandler; }
 
 	private:
 		std::unique_ptr<VulkanContext> mContext;
 		std::unique_ptr<Window> mWindow;
 		std::unique_ptr<Device> mDevice;
 		std::unique_ptr<Swapchain> mSwapchain;
-		std::unique_ptr<Renderer> mRenderer;
-		std::unique_ptr<Mesh<PositionColorVertex>> mMesh;
 		EventHandler mEvtHandler;
-		PerspectiveCamera mCamera{glm::vec3(0.f, 0.f, 2.f), 70.f};
-		Transform mMeshTf;
-		Transform mMeshTf2;
+
+		static std::unique_ptr<Application> sInstance;
 	};
 }

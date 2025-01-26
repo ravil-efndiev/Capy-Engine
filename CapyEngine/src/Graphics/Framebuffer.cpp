@@ -7,6 +7,12 @@ namespace cp {
 		create();
 	}
 
+	Framebuffer::Framebuffer(const Framebuffer& other) 
+		: mSpec(other.mSpec), mDevice(other.mDevice) {
+		
+		create();
+	}
+
 	Framebuffer::~Framebuffer() {
 		vkDestroyFramebuffer(mDevice.vkDevice(), mFramebuffer, nullptr);
 		CP_DEBUG_LOG("framebuffer destroyed");

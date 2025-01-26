@@ -13,6 +13,7 @@ namespace cp {
 	class Framebuffer {
 	public:
 		Framebuffer(Device& device, const FramebufferSpecification& spec);
+		Framebuffer(const Framebuffer& other);
 		~Framebuffer();
 
 		VkFramebuffer vkHandle() const { return mFramebuffer; }

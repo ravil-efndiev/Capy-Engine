@@ -32,7 +32,7 @@ namespace cp {
 		createInfo.size = size;
 
 		VkResult result = vkCreateBuffer(device.vkDevice(), &createInfo, nullptr, &buffer.buffer);
-		checkVkResult(result, "failed to create vertex buffer");
+		checkVkResult(result, "failed to create a buffer");
 
 		VkMemoryRequirements requirements;
 		vkGetBufferMemoryRequirements(device.vkDevice(), buffer.buffer, &requirements);
@@ -71,7 +71,7 @@ namespace cp {
 		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-		VkResult result = vkBeginCommandBuffer(commandBuffer, &beginInfo);
+		VkResult beginResult = vkBeginCommandBuffer(commandBuffer, &beginInfo);
 		
 		VkBufferCopy copyRegion{};
 		copyRegion.srcOffset = 0;
@@ -80,7 +80,7 @@ namespace cp {
 
 		vkCmdCopyBuffer(commandBuffer, src, dst, 1, &copyRegion);
 
-		vkEndCommandBuffer(commandBuffer);
+		VkResult endResult = vkEndCommandBuffer(commandBuffer);
 
 		VkSubmitInfo submitInfo{};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -88,8 +88,10 @@ namespace cp {
 		submitInfo.pCommandBuffers = &commandBuffer;
 		
 		VkQueue queue = device.graphicsQueue();
-		vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
+		VkResult submitResult = vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
 		vkQueueWaitIdle(queue);
+
+		checkVkResult({ beginResult, endResult, submitResult }, "failed to copy buffer");
 
 		vkFreeCommandBuffers(device.vkDevice(), sCmdPool, 1, &commandBuffer);
 	}

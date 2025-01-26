@@ -2,11 +2,8 @@
 #include <Application.h>
 
 namespace cp {
-	Shader::Shader(
-		Device& device,
-		const std::filesystem::path& vertexShaderPath,
-		const std::filesystem::path& fragmentShaderPath
-	) : mDevice(device) {
+	Shader::Shader(const std::filesystem::path& vertexShaderPath, const std::filesystem::path& fragmentShaderPath)
+		: mDevice(Application::get().device()) {
 
 		mVshData = readFileBin(vertexShaderPath);
 		mFshData = readFileBin(fragmentShaderPath);

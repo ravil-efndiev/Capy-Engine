@@ -86,9 +86,9 @@ namespace cp {
 
 		VkPipelineRasterizationStateCreateInfo rasterizerInfo{};
 		rasterizerInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-		rasterizerInfo.cullMode = mConfig.culling;
+		rasterizerInfo.cullMode = mConfig.backCullingEnabled ? VK_CULL_MODE_BACK_BIT : VK_CULL_MODE_NONE;
 		rasterizerInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;
-		rasterizerInfo.polygonMode = mConfig.polygonMode;
+		rasterizerInfo.polygonMode = mConfig.wireframeMode ? VK_POLYGON_MODE_LINE : VK_POLYGON_MODE_FILL;
 		rasterizerInfo.depthClampEnable = VK_FALSE;
 		rasterizerInfo.rasterizerDiscardEnable = VK_FALSE;
 		rasterizerInfo.lineWidth = 1.0f;

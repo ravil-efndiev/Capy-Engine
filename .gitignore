@@ -4,9 +4,11 @@ bin
 CmakeFiles
 CMakeCache.txt
 x64
-vk.dir
+*.dir
 cmake_install.cmake
 *.vcxproj
 *.filters
 *.user
 *.sln
+Debug
+Release

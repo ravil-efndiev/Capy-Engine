@@ -30,7 +30,7 @@ namespace cp {
 		vkFreeMemory(mDevice.vkDevice(), stagingBufferMemory, nullptr);
 	}
 
-	IndexBuffer::IndexBuffer(Device& device, const std::vector<uint16>& indices) 
+	IndexBuffer::IndexBuffer(Device& device, const std::vector<uint16>& indices)
 		: mDevice(device), mIndicesCount(indices.size()) {
 
 		create(sizeof(uint16) * indices.size(), indices.data());

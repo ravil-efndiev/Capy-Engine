@@ -1,9 +1,11 @@
 #include "Mesh.h"
+#include <Application.h>
 
 namespace cp {
 	template<class VertexT>
-	Mesh<VertexT>::Mesh(Device& device, const std::vector<VertexT>& vertices, const std::vector<uint16>& indices) : 
-		mDevice(device), mVertices(vertices), mIndices(indices),
+	Mesh<VertexT>::Mesh(const std::vector<VertexT>& vertices, const std::vector<uint16>& indices) : 
+		mDevice(Application::get().device()),
+		mVertices(vertices), mIndices(indices),
 		mVertexBuffer(mDevice, mVertices), 
 		mIndexBuffer(mDevice, mIndices) {}
 

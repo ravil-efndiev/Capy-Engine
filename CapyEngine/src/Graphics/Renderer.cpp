@@ -33,15 +33,10 @@ namespace cp {
 		CP_DEBUG_LOG("sync objects destroyed");
 	}
 
-	PipelineHandle Renderer::addPipelineConfiguration(
-		PipelineConfiguration& config, 
-		bool useDefaultDescriptorBindings
-	) {
-		if (useDefaultDescriptorBindings) {
-			config.descriptorSetBindings = {
-				{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT } // Matrix uniform
-			};
-		}
+	PipelineHandle Renderer::addPipelineConfiguration(PipelineConfiguration& config) {
+		config.descriptorSetBindings = {
+			{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT } // Matrix uniform
+		};
 		mPipelines.push_back(std::make_unique<Pipeline>(mDevice, mSwapchain, config));
 		return { (uint)mPipelines.size() - 1 };
 	}
@@ -56,9 +51,7 @@ namespace cp {
 	}
 
 	void Renderer::begin() {
-		if (mViewportWidth <= 0 || mViewportHeight <= 0) {
-			return;
-		}
+		if (mViewportWidth <= 0 || mViewportHeight <= 0) return;
 
 		vkWaitForFences(mDevice.vkDevice(), 1, &mInFlightFences[mCurrentFrame], VK_TRUE, std::numeric_limits<uint64>::max());
 
@@ -93,7 +86,7 @@ namespace cp {
 		VkRenderPassBeginInfo passBeginInfo{};
 		passBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 		passBeginInfo.renderPass = mRenderPass->vkHandle();
-		passBeginInfo.framebuffer = mFramebuffers[mImageIdx]->vkHandle();
+		passBeginInfo.framebuffer = mFramebuffers[mImageIdx].vkHandle();
 		passBeginInfo.renderArea.extent = mSwapchain.extent();
 		passBeginInfo.renderArea.offset = { 0, 0 };
 
@@ -130,25 +123,33 @@ namespace cp {
 	}
 
 	void Renderer::submitMesh(const Mesh<PositionColorVertex>& mesh, const Transform& tf) {
+		if (mViewportWidth <= 0 || mViewportHeight <= 0) return;
+
 		CP_ASSERT(
 			mPipelines[mCurrentPipeline.id]->configuration().vertexType == PipelineConfiguration::PositionColorVertex,
 			"cannot submit mesh with vertex type PositionColorVertex with different pipeline configuration"
 		);
+
 		updateModelMatrix(tf.calcModelMatrix());
 		bindAndDrawBuffers(mesh.vertexBuffer(), mesh.indexBuffer());
 	}
 
 	void Renderer::submitMesh(const Mesh<SpriteVertex>& mesh, const Transform& tf) {
+		if (mViewportWidth <= 0 || mViewportHeight <= 0) return;
+
 		CP_ASSERT(
 			mPipelines[mCurrentPipeline.id]->configuration().vertexType == PipelineConfiguration::TexCoordVertex,
 			"cannot submit mesh with vertex type SpriteVertex with different pipeline configuration"
 		);
+
 		updateModelMatrix(tf.calcModelMatrix());
 		bindAndDrawBuffers(mesh.vertexBuffer(), mesh.indexBuffer());
 	}
 
 
 	void Renderer::end() {
+		if (mViewportWidth <= 0 || mViewportHeight <= 0) return;
+
 		vkCmdEndRenderPass(mCmdBuffers[mCurrentFrame]);
 
 		VkResult endBufferResult = vkEndCommandBuffer(mCmdBuffers[mCurrentFrame]);
@@ -236,7 +237,7 @@ namespace cp {
 			framebufferSpec.attachment = image.view;
 			framebufferSpec.pRenderPass = mRenderPass.get();
 
-			mFramebuffers.push_back(std::make_unique<Framebuffer>(mDevice, framebufferSpec));
+			mFramebuffers.push_back(Framebuffer(mDevice, framebufferSpec));
 		}
 	}
 
@@ -318,7 +319,7 @@ namespace cp {
 		mMatrixUniformBuffers[mCurrentFrame]->update({ projection, view });
 	}
 
-	void Renderer::bindAndDrawBuffers(VertexBuffer& vb, IndexBuffer& ib) {
+	void Renderer::bindAndDrawBuffers(const VertexBuffer& vb, const IndexBuffer& ib) {
 		VkBuffer vertexBuffers[] = { vb.vkHandle() };
 		VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(mCmdBuffers[mCurrentFrame], 0, 1, vertexBuffers, offsets);
